@@ -12,6 +12,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -28,24 +29,26 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import static com.example.web.tourseoul.viewPagerAdapter.soundOnOff;
+import static com.example.web.tourseoul.viewPagerAdapter.speech;
+
 /**
  * Created by WEB on 2017-09-18.
  */
 
 
 // 주 클래스
-public class listpage extends AppCompatActivity implements TextToSpeech.OnInitListener{
+public class listpage extends AppCompatActivity{
 
     private Context mContext;
     //database
-    int tt=0;
+
     DBAccess dbAccess;
 
     private static MediaPlayer mp;
     Intent intent;
 
     String DBnum;
-    private TextToSpeech tts;
 
 
 /*s
@@ -57,41 +60,8 @@ public class listpage extends AppCompatActivity implements TextToSpeech.OnInitLi
     ViewPager pager;
 
     Button soundBtn; //사운드 버튼 지정
-    Boolean soundRun = false; // 사운드 상태 지정
 
-    @Override
-    public void onInit(int status) {
-        if (status == TextToSpeech.SUCCESS) {
-            int language = tts.setLanguage(Locale.KOREAN);
-
-            if (language == TextToSpeech.LANG_MISSING_DATA || language == TextToSpeech.LANG_NOT_SUPPORTED) {
-                Toast.makeText(this, "지원하지 않는 언어입니다.", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(this, "음성재생 시작. ", Toast.LENGTH_SHORT).show();
-            }
-        } else {
-            Toast.makeText(this, "TTS 실패!", Toast.LENGTH_SHORT).show();
-        }
-
-
-
-    }
     //Speak out...
-    private void speakOutNow(String text) {
-        //tts.setPitch((float) 0.1); //음량
-        //tts.setSpeechRate((float) 0.5); //재생속도
-        tts.speak(text, TextToSpeech.QUEUE_FLUSH, null);
-    }
-
-
-    @Override
-    protected void onDestroy() {
-        if (tts != null) {
-            tts.stop();
-            tts.shutdown();
-        }
-        super.onDestroy();
-    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -128,10 +98,31 @@ public class listpage extends AppCompatActivity implements TextToSpeech.OnInitLi
         //다만. ViewPager로 스크롤 될 수 있도록 되어 있다는 것이 다름
         //PagerAdapter를 상속받은 viewPagerAdapter 객체 생성
         //viewPagerAdapter LayoutInflater 객체 전달
-        viewPagerAdapter adapter = new viewPagerAdapter(getLayoutInflater(), list);
+        viewPagerAdapter adapter = new viewPagerAdapter(getLayoutInflater(), list, this);
 
         //ViewPager에 Adapter 설정
         pager.setAdapter(adapter);
+
+        pager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) { //스크롤 할 때 실행되는 명령
+            }
+
+            @Override
+            public void onPageSelected(int position) { //페이지가 넘어갔을 때 실행되는 명령
+                Log.d("onPageSelected", "2");
+                if (soundOnOff) {
+                    soundOnOff = false;
+                    speech.stop();
+                }
+
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) { // 정확히 모르겠음
+
+            }
+        });
 
 
 
@@ -142,8 +133,6 @@ public class listpage extends AppCompatActivity implements TextToSpeech.OnInitLi
 
 
         //사운드버튼 클릭
-        tts = new TextToSpeech(this, this);
-        speakOutNow(list.get(1).getKor_s());
 
         String sss="";
         sss="engs";
@@ -179,8 +168,14 @@ public class listpage extends AppCompatActivity implements TextToSpeech.OnInitLi
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) { //툴바 안의 내용 클릭 시
+        switch (item.getItemId()) {
+            case R.id.sajuk:
+                if(item.isChecked()) item.setChecked(false);
+                else item.setChecked(true);
+                return true;
+        }
         Toast.makeText(getApplicationContext(), "아직 미구현", Toast.LENGTH_SHORT).show();
-        return true;
+        return super.onOptionsItemSelected(item);
     }
     public void OnClickImg(View v) { //위치찾기 버튼 클릭 시 행동
         intent  = new Intent(getApplicationContext(), selectlist.class);      // 정보가 이동될 액티비티를 지정한다.
@@ -188,6 +183,4 @@ public class listpage extends AppCompatActivity implements TextToSpeech.OnInitLi
 
 
     }
-
-
 }

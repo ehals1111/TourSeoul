@@ -1,5 +1,6 @@
 package com.example.web.tourseoul;
 
+import android.content.Context;
 import android.speech.tts.TextToSpeech;
 import android.support.v4.view.PagerAdapter;
 import android.util.Log;
@@ -22,19 +23,22 @@ import java.util.Locale;
  */
 
 public class viewPagerAdapter extends PagerAdapter implements TextToSpeech.OnInitListener{
+    private final Context context;
     LayoutInflater inflater;
     TextView name;
     Button soundBtn;
-    Boolean soundOnOff = false;
+    public static Boolean soundOnOff = false;
     WebView image;
     TextView contents;
     ArrayList<listViewBean> list;
-    private TextToSpeech speech;
-    public viewPagerAdapter(LayoutInflater inflater, ArrayList<listViewBean> list) {
+    public static TextToSpeech speech;
+
+    public viewPagerAdapter(LayoutInflater inflater, ArrayList<listViewBean> list, Context context) {
 
         //전달 받은 LayoutInflater를 멤버변수로 전달
         this.inflater=inflater;
         this.list = list;
+        this.context = context;
 
     }
     //PagerAdapter가 가지고 잇는 View의 개수를 리턴
@@ -87,28 +91,33 @@ public class viewPagerAdapter extends PagerAdapter implements TextToSpeech.OnIni
             image.getSettings().setJavaScriptEnabled(true);
             image.setInitialScale(1);
             image.getSettings().setLoadWithOverviewMode(true);
-            webSettings.setUseWideViewPort(true);
-        /*
-            soundBtn.setOnClickListener(new View.OnClickListener() {
+
+            webSettings.setUseWideViewPort(true); //웹뷰 와이드하게 보이도록 하기
+
+            name.setText(list.get(position).getKor_n());
+            contents.setText(list.get(position).getKor_s());
+            speech = new TextToSpeech(context, this);
+            soundBtn.setOnClickListener(new View.OnClickListener(){
+
                 @Override
                 public void onClick(View v) {
                     if (soundOnOff){
                         soundOnOff = false;
-                        soundBtn.setBackgroundResource(R.drawable.sounda);
-                        Log.d("버튼 로그", "버튼 :" + soundOnOff+ "\nposition : " + position);
+                        v.setBackgroundResource(R.drawable.soundb);
+                        speech.stop();
+                        Log.d("버튼 로그", "버튼 :" + soundOnOff+ "\nposition : " );
+
                     }else {
                         soundOnOff = true;
-                        soundBtn.setBackgroundResource(R.drawable.soundb);
-                        Log.d("버튼 로그", "버튼 :" + soundOnOff+ "\nposition : " + position);
+                        Log.d("버튼 로그", "버튼 :" + soundOnOff+ "\nposition : " );
+                        v.setBackgroundResource(R.drawable.sounda);
+                        speakOutNow(list.get(position).getEng_s());
                     }
+
                 }
             });
-*/
-
-            soundBtn.setOnClickListener(buttonClicked);
-            name.setText(list.get(position).getKor_n());
-            contents.setText(list.get(position).getKor_s());
             container.addView(view);
+
 
 
 
@@ -147,31 +156,14 @@ public class viewPagerAdapter extends PagerAdapter implements TextToSpeech.OnIni
     }
 
 
-    View.OnClickListener buttonClicked = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            if (soundOnOff){
-                soundOnOff = false;
-                v.setBackgroundResource(R.drawable.sounda);
-                Log.d("버튼 로그", "버튼 :" + soundOnOff+ "\nposition : " );
-
-            }else {
-                soundOnOff = true;
-                v.setBackgroundResource(R.drawable.soundb);
-                Log.d("버튼 로그", "버튼 :" + soundOnOff+ "\nposition : " );
-            }
-
-        }
-    };
-
     @Override
     public void onInit(int status) {
         if (status == TextToSpeech.SUCCESS) {
-            int language = speech.setLanguage(Locale.KOREAN);
+            int language = speech.setLanguage(Locale.ENGLISH);
+            //int language = speech.setLanguage(new Locale("spa", "ESP"));
 
             if (language == TextToSpeech.LANG_MISSING_DATA || language == TextToSpeech.LANG_NOT_SUPPORTED) {
             } else {
-                speakOutNow("앙기모찌");
             }
         } else {
         }
