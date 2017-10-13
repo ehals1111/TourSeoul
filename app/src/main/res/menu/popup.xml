@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <group
+        android:id="@+id/popup"
+        android:checkableBehavior="all" >
+        <item
+            android:id="@+id/sajuk"
+            android:title="사적지"
+            />
+        <item
+            android:id="@+id/kangkang"
+            android:title="관광지"
+            />
+        <item
+            android:id="@+id/yashumi"
+            android:title="휴양지"
+            />
+        <item
+            android:id="@+id/money"
+            android:title="상업지"
+            />
+        <item
+            android:id="@+id/event"
+            android:title="이벤트"
+            />
+        <item
+            android:id="@+id/motel"
+            android:title="숙    박"
+            />
+    </group>
+
+    </menu>
