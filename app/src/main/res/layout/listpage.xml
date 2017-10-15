@@ -31,6 +31,13 @@
                 android:layout_height="50dp"
                 android:background="@drawable/search"
                 />
+            <Button
+                android:id="@+id/popupBtn"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/search"
+                android:onClick="mOnClick"
+                />
         </LinearLayout>
 
     </android.support.v7.widget.Toolbar>

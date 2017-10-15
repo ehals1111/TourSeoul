@@ -1,13 +1,10 @@
 package com.example.web.tourseoul;
 
-import android.*;
 import android.Manifest;
-import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -16,8 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-
-import java.io.InputStream;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     //mainActivity에서는 버튼을 통하여 intent에 int형태의 값을 다른 activity로 전달하는 것을 목적으로 하며 이 int값을 통하여 언어를 선별하고는 기준을 잡고자 함
@@ -31,6 +27,9 @@ public class MainActivity extends AppCompatActivity {
     Button ducBtn;
     Button nihonBtn;
     Button rusBtn;
+    ProgressDialog progressDialog; //로딩 중 화면 띄울 다이얼로그
+    TourAPI api; //API에 접근
+    static ArrayList<TourData> tour_list = new ArrayList<TourData>(); //API를 통해 받아온 리스트를 저장
 
 
     EditText dbnum; //DBnum이 잘 적용되었는지를 보기 위한 텍스트창
@@ -64,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         int checkPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
         int checkPermission2 = PackageManager.PERMISSION_GRANTED;
         int checkPermission3 = PackageManager.PERMISSION_DENIED;
@@ -85,6 +85,8 @@ public class MainActivity extends AppCompatActivity {
         ducBtn=(Button)findViewById(R.id.ducBtn);
         nihonBtn=(Button)findViewById(R.id.nihonBtn);
         rusBtn=(Button)findViewById(R.id.rusBtn);
+
+        api = new TourAPI();
 /*
 
         korBtn.setBackgroundResource(R.drawable.button1);
@@ -105,12 +107,30 @@ public class MainActivity extends AppCompatActivity {
         korBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {                                                 // 리싸이클러뷰 로~
-                Toast.makeText(getApplicationContext(),"한글타입으로 이동, DBnum :"+DBnum, Toast.LENGTH_SHORT).show();
-                DBnum = "1";        // db에서 한글 데이터를 읽어 들일 목적으로 쓰였다면? 0 이 되어야 한다.(or DBnum - 1로 사용하여야 할것이다.)
-                intent  = new Intent(getApplicationContext(), listpage.class);      // 정보가 이동될 액티비티를 지정한다.
-                intent.putExtra("DBnum", DBnum);                                        // DBnum이라는 변수에 DBnum == 1 넣어 intent에 데이터를 추가하여 넘기게 된다.
-                startActivity(intent);                                                    // 액티비티의 전환.(위에서 적어준 데이터들도 함깨 이동 된다.)
-                finish();
+                progressDialog = ProgressDialog.show(MainActivity.this,
+                        "Please wait....", "Data Loading...");
+
+                final Thread thread = new Thread(){
+
+                    @Override
+                    public void run() {
+                        api.locationBasedList(); //접속여부 확인
+                        try {
+                            api.xmlparse(); //파일화
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        //api.SystemOutPrintTour(); // 접속 후 받은 내용 프린트
+                        tour_list = api.GetTour("item");
+                        progressDialog.dismiss();
+                        DBnum = "1";        // db에서 한글 데이터를 읽어 들일 목적으로 쓰였다면? 0 이 되어야 한다.(or DBnum - 1로 사용하여야 할것이다.)
+                        intent  = new Intent(getApplicationContext(), listpage.class);      // 정보가 이동될 액티비티를 지정한다.
+                        intent.putExtra("DBnum", DBnum);                                        // DBnum이라는 변수에 DBnum == 1 넣어 intent에 데이터를 추가하여 넘기게 된다.
+                        startActivity(intent);                                                    // 액티비티의 전환.(위에서 적어준 데이터들도 함깨 이동 된다.)
+                        finish();
+                    }
+                };
+                thread.start();
             }
         });
         engBtn.setOnClickListener(new View.OnClickListener() {                            // listpage 로~ (리사이클러뷰 적용중인 페이지 ?)

@@ -31,13 +31,14 @@ public class viewPagerAdapter extends PagerAdapter implements TextToSpeech.OnIni
     WebView image;
     TextView contents;
     ArrayList<listViewBean> list;
+    ArrayList<TourData> tour_list;
     public static TextToSpeech speech;
 
-    public viewPagerAdapter(LayoutInflater inflater, ArrayList<listViewBean> list, Context context) {
+    public viewPagerAdapter(LayoutInflater inflater, ArrayList<TourData> tour_list, Context context) {
 
         //전달 받은 LayoutInflater를 멤버변수로 전달
         this.inflater=inflater;
-        this.list = list;
+        this.tour_list = tour_list;
         this.context = context;
 
     }
@@ -46,7 +47,7 @@ public class viewPagerAdapter extends PagerAdapter implements TextToSpeech.OnIni
     @Override
     public int getCount() {
         // TODO Auto-generated method stub
-        return list.size(); //이미지 개수 리턴(그림이 10개라서 10을 리턴)
+        return tour_list.size(); //이미지 개수 리턴(그림이 10개라서 10을 리턴)
     }
 
     //ViewPager가 현재 보여질 Item(View객체)를 생성할 필요가 있는 때 자동으로 호출
@@ -84,7 +85,7 @@ public class viewPagerAdapter extends PagerAdapter implements TextToSpeech.OnIni
 
 
             // 이미지 주소 지정
-            image.loadUrl(list.get(position).getImg_sub());
+            image.loadUrl(tour_list.get(position).getBigImage());
             // WebViewClient 지정
             image.setWebViewClient(new WebViewClientClass());
 
@@ -94,11 +95,11 @@ public class viewPagerAdapter extends PagerAdapter implements TextToSpeech.OnIni
 
             webSettings.setUseWideViewPort(true); //웹뷰 와이드하게 보이도록 하기
 
-            name.setText(list.get(position).getKor_n());
-            contents.setText(list.get(position).getKor_s());
+            name.setText(tour_list.get(position).getTitle());
+            //contents.setText(list.get(position).getKor_s());
             speech = new TextToSpeech(context, this);
+        /*
             soundBtn.setOnClickListener(new View.OnClickListener(){
-
                 @Override
                 public void onClick(View v) {
                     if (soundOnOff){
@@ -115,7 +116,9 @@ public class viewPagerAdapter extends PagerAdapter implements TextToSpeech.OnIni
                     }
 
                 }
-            });
+            });*/
+
+
             container.addView(view);
 
 
