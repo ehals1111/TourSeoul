@@ -126,7 +126,6 @@ public class MainActivity extends AppCompatActivity {
                         //api.SystemOutPrintTour(); // 접속 후 받은 내용 프린트
                         tour_list = api.GetTour("item");
                         //progressDialog.dismiss(); //프로그레스 없애기
-
                         customProgressDialog.dismiss();
                         DBnum = "1";        // db에서 한글 데이터를 읽어 들일 목적으로 쓰였다면? 0 이 되어야 한다.(or DBnum - 1로 사용하여야 할것이다.)
                         intent  = new Intent(getApplicationContext(), listpage.class);      // 정보가 이동될 액티비티를 지정한다.

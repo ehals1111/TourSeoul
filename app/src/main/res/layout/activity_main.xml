@@ -7,152 +7,119 @@
     tools:context="com.example.web.tourseoul.MainActivity"
     android:orientation="vertical"
     android:weightSum="1">
-
-        <!-- 이미지 추가시 위 컬러 부분에 이미지 추가  android:scrollbarThumbVertical -->
-        <ScrollView
-            android:verticalScrollbarPosition="right"
-            android:scrollbars="vertical"
-            android:scrollbarSize="16dp"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scrollbarStyle="insideOverlay"
-            android:scrollbarThumbVertical="@color/colorAccent"
-            android:background="@color/wallet_highlighted_text_holo_light"
-            android:scrollbarAlwaysDrawVerticalTrack="true"
-            android:layout_weight="0.07">
-
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:orientation="vertical" >
-
-                        <TextView
-                            android:id="@+id/textView"
-                            android:layout_marginTop="50dp"
+                        <LinearLayout
+                            android:orientation="horizontal"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:textColor="#ffffff"
-                            android:textSize="30dp"
-                            android:textAlignment="center"
-                            android:text="Language" />
-                        <Button
-                            android:id="@+id/korBtn"
+                            android:layout_weight="1"
+                            >
+                                <Button
+                                    android:id="@+id/korBtn"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="0.07"
+                                    android:background="@drawable/button"
+                                    android:text="KOREAN"
+                                    android:textSize="20dp"
+                                    android:textStyle="bold"
+                                    />
+                                <Button
+                                    android:id="@+id/engBtn"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="0.07"
+                                    android:background="@drawable/buttonc"
+                                    android:text="English"
+                                    android:textSize="20dp"
+                                    android:textStyle="bold"
+                                    />
+                                <Button
+                                    android:id="@+id/rusBtn"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="0.07"
+                                    android:background="@drawable/buttonc"
+                                    android:text="russia"
+                                    android:textSize="20dp"
+                                    android:textStyle="bold"
+                                    />
+                        </LinearLayout>
+                        <LinearLayout
+                            android:orientation="horizontal"
                             android:layout_width="match_parent"
-                            android:layout_height="50dp"
-                            android:layout_weight="0.07"
-                            android:layout_marginTop="5dp"
-                            android:layout_marginLeft="70dp"
-                            android:layout_marginRight="70dp"
-                            android:background="@drawable/button"
-                            android:text="한글"
-                            android:textSize="20dp"
-                            android:textStyle="bold"
-                            />
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1">
+                                  <Button
+                                    android:id="@+id/nihonBtn"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="0.07"
+                                    android:background="@drawable/buttonc"
+                                    android:textSize="20dp"
+                                    android:text="nihon"
+                                    android:textStyle="bold" />
 
-                        <Button
+                                <Button
+                                    android:id="@+id/ducBtn"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="0.07"
+                                    android:background="@drawable/buttonc"
+                                    android:text="germany"
+                                    android:textSize="20dp"
+                                    android:textStyle="bold"
+                                    />
 
-                            android:id="@+id/engBtn"
+                                <Button
+                                    android:id="@+id/spaBtn"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="0.07"
+                                    android:background="@drawable/buttonc"
+                                    android:text="spain"
+                                    android:textSize="20dp"
+                                    android:textStyle="bold"
+                                    />
+                        </LinearLayout>
+                         <LinearLayout
+                            android:orientation="horizontal"
                             android:layout_width="match_parent"
-                            android:layout_height="50dp"
-                            android:layout_weight="0.07"
-                            android:layout_marginLeft="70dp"
-                            android:layout_marginRight="70dp"
-                            android:background="@drawable/buttonc"
-                            android:text="English"
-                            android:textSize="20dp"
-                            android:textStyle="bold"
-                            />
+                            android:layout_height="wrap_content"
+                             android:layout_weight="1"
+                             >
+                                <Button
+                                    android:id="@+id/fraBtn"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="0.07"
+                                    android:background="@drawable/buttonc"
+                                    android:text="france"
+                                    android:textSize="20dp"
+                                    android:textStyle="bold" />
 
-                        <Button
-                            android:id="@+id/rusBtn"
-                            android:layout_width="match_parent"
-                            android:layout_height="50dp"
-                            android:layout_weight="0.07"
-                            android:layout_marginLeft="70dp"
-                            android:layout_marginRight="70dp"
-                            android:background="@drawable/buttonc"
-                            android:text="russia"
-                            android:textSize="20dp"
-                            android:textStyle="bold"
-                            />
+                                <Button
+                                    android:id="@+id/zzangBtn"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="0.07"
+                                    android:background="@drawable/buttonc"
+                                    android:text="china 1"
+                                    android:textSize="20dp"
+                                    android:textStyle="bold" />
 
-                        <Button
-                            android:id="@+id/nihonBtn"
-                            android:layout_width="match_parent"
-                            android:layout_height="50dp"
-                            android:layout_weight="0.07"
-                            android:layout_marginLeft="70dp"
-                            android:layout_marginRight="70dp"
-                            android:background="@drawable/buttonc"
-                            android:textSize="20dp"
-                            android:text="nihon"
-                            android:textStyle="bold" />
-
-                        <Button
-                            android:id="@+id/ducBtn"
-                            android:layout_width="match_parent"
-                            android:layout_height="50dp"
-                            android:layout_weight="0.07"
-                            android:layout_marginLeft="70dp"
-                            android:layout_marginRight="70dp"
-                            android:background="@drawable/buttonc"
-                            android:text="germany"
-                            android:textSize="20dp"
-                            android:textStyle="bold"
-                            />
-
-                        <Button
-                            android:id="@+id/spaBtn"
-                            android:layout_width="match_parent"
-                            android:layout_height="50dp"
-                            android:layout_weight="0.07"
-                            android:layout_marginLeft="70dp"
-                            android:layout_marginRight="70dp"
-                            android:background="@drawable/buttonc"
-                            android:text="spain"
-                            android:textSize="20dp"
-                            android:textStyle="bold"
-                            />
-
-                        <Button
-                            android:id="@+id/fraBtn"
-                            android:layout_width="match_parent"
-                            android:layout_height="50dp"
-                            android:layout_weight="0.07"
-                            android:layout_marginLeft="70dp"
-                            android:layout_marginRight="70dp"
-                            android:background="@drawable/buttonc"
-                            android:text="france"
-                            android:textSize="20dp"
-                            android:textStyle="bold" />
-
-                        <Button
-                            android:id="@+id/zzangBtn"
-                            android:layout_width="match_parent"
-                            android:layout_height="50dp"
-                            android:layout_weight="0.07"
-                            android:layout_marginLeft="70dp"
-                            android:layout_marginRight="70dp"
-                            android:background="@drawable/buttonc"
-                            android:text="china 1"
-                            android:textSize="20dp"
-                            android:textStyle="bold" />
-
-                        <Button
-                            android:id="@+id/zzangBtn2"
-                            android:layout_width="match_parent"
-                            android:layout_height="50dp"
-                            android:layout_weight="0.07"
-                            android:layout_marginLeft="70dp"
-                            android:layout_marginRight="70dp"
-                            android:background="@drawable/buttonb"
-                            android:text="china 2"
-                            android:textSize="20dp"
-                            android:textStyle="bold" />
-
+                                <Button
+                                    android:id="@+id/zzangBtn2"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="0.07"
+                                    android:background="@drawable/buttonb"
+                                    android:text="china 2"
+                                    android:textSize="20dp"
+                                    android:textStyle="bold" />
+                         </LinearLayout>
                 </LinearLayout>
-
-        </ScrollView>
-
-
 </LinearLayout>
