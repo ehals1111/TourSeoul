@@ -69,7 +69,6 @@ public class TourAPI {
 		urlBuilder.append("?ServiceKey=qk%2BGaqjIo5c4he7T4X4rz3wFRomQOavR7lfOUKTWAwQbWE4AMKZeNlXWTEF88gm85q0IBrCFdm74edYyMGORZQ%3D%3D");
 
 	}
-	
 	public TourAPI( String _language, String _type ){
 		
 		urlBuilder = new StringBuilder("http://api.visitkorea.or.kr/openapi/service/rest");

@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -17,7 +18,7 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     //mainActivity에서는 버튼을 통하여 intent에 int형태의 값을 다른 activity로 전달하는 것을 목적으로 하며 이 int값을 통하여 언어를 선별하고는 기준을 잡고자 함
-
+    private CustomProgressDialog customProgressDialog;
     Button korBtn;
     Button engBtn;
     Button zzangBtn;
@@ -107,9 +108,11 @@ public class MainActivity extends AppCompatActivity {
         korBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {                                                 // 리싸이클러뷰 로~
-                progressDialog = ProgressDialog.show(MainActivity.this,
-                        "Please wait....", "Data Loading...");
-
+                //progressDialog = ProgressDialog.show(MainActivity.this,
+                    //    "Please wait....", "Data Loading...");  //프로그래스 보여주기
+                customProgressDialog = new CustomProgressDialog(MainActivity.this);
+                customProgressDialog .getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                customProgressDialog.show();
                 final Thread thread = new Thread(){
 
                     @Override
@@ -122,7 +125,9 @@ public class MainActivity extends AppCompatActivity {
                         }
                         //api.SystemOutPrintTour(); // 접속 후 받은 내용 프린트
                         tour_list = api.GetTour("item");
-                        progressDialog.dismiss();
+                        //progressDialog.dismiss(); //프로그레스 없애기
+
+                        customProgressDialog.dismiss();
                         DBnum = "1";        // db에서 한글 데이터를 읽어 들일 목적으로 쓰였다면? 0 이 되어야 한다.(or DBnum - 1로 사용하여야 할것이다.)
                         intent  = new Intent(getApplicationContext(), listpage.class);      // 정보가 이동될 액티비티를 지정한다.
                         intent.putExtra("DBnum", DBnum);                                        // DBnum이라는 변수에 DBnum == 1 넣어 intent에 데이터를 추가하여 넘기게 된다.
