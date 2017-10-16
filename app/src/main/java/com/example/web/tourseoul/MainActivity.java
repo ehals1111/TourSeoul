@@ -2,12 +2,15 @@ package com.example.web.tourseoul;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -68,14 +71,15 @@ public class MainActivity extends AppCompatActivity {
         int checkPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
         int checkPermission2 = PackageManager.PERMISSION_GRANTED;
         int checkPermission3 = PackageManager.PERMISSION_DENIED;
-
+/*
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             Log.d("권한 체크", "현재 권한이 체크되었습니다. " + checkPermission + checkPermission2 + checkPermission3);
 
         } else {
             Log.d("권한 체크", "현재 권한이 체크되어 있지 않습니다. " + checkPermission + checkPermission2 + checkPermission3);
-        }
+        }*/
 
+        chkGps();
 
         korBtn = (Button) findViewById(R.id.korBtn);
         engBtn = (Button) findViewById(R.id.engBtn);
@@ -146,7 +150,33 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         thread.start();
-
-
     }
+    private boolean chkGps() {
+
+        String gps = android.provider.Settings.Secure.getString(getContentResolver(), android.provider.Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
+
+        if (!(gps.matches(".*gps.*") && gps.matches(".*network.*"))) {
+            AlertDialog.Builder gsDialog = new AlertDialog.Builder(this);
+            gsDialog.setTitle("위치 서비스 설정");
+            gsDialog.setMessage("무선 네트워크 사용, GPS 위성 사용을 모두 체크하셔야 정확한 위치 서비스가 가능합니다.\n위치 서비스 기능을 설정하시겠습니까?");
+            gsDialog.setPositiveButton("네", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    // GPS설정 화면으로 이동
+                    Intent intent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    intent.addCategory(Intent.CATEGORY_DEFAULT);
+                    startActivity(intent);
+                }
+            }).setNegativeButton("아니오", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            Toast.makeText(getApplicationContext(),"Gps를 사용을 안하시면 이용에 체한이 있습니다.",Toast.LENGTH_LONG).show();
+                            return;
+                        }
+                    }).create().show();
+            return false;
+
+        } else {
+            return true;
+        }
+    }
+
 }
