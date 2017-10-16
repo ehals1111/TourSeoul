@@ -70,24 +70,34 @@ public class MainActivity extends AppCompatActivity {
         int checkPermission3 = PackageManager.PERMISSION_DENIED;
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            Log.d("권한 체크", "현재 권한이 체크되었습니다. " + checkPermission + checkPermission2+checkPermission3);
+            Log.d("권한 체크", "현재 권한이 체크되었습니다. " + checkPermission + checkPermission2 + checkPermission3);
 
         } else {
-            Log.d("권한 체크", "현재 권한이 체크되어 있지 않습니다. " + checkPermission + checkPermission2+checkPermission3);
+            Log.d("권한 체크", "현재 권한이 체크되어 있지 않습니다. " + checkPermission + checkPermission2 + checkPermission3);
         }
 
 
-        korBtn=(Button)findViewById(R.id.korBtn);
-        engBtn=(Button)findViewById(R.id.engBtn);
-        zzangBtn=(Button)findViewById(R.id.zzangBtn);
-        zzang2Btn=(Button)findViewById(R.id.zzangBtn2);
-        fraBtn=(Button)findViewById(R.id.fraBtn);
-        spaBtn=(Button)findViewById(R.id.spaBtn);
-        ducBtn=(Button)findViewById(R.id.ducBtn);
-        nihonBtn=(Button)findViewById(R.id.nihonBtn);
-        rusBtn=(Button)findViewById(R.id.rusBtn);
+        korBtn = (Button) findViewById(R.id.korBtn);
+        engBtn = (Button) findViewById(R.id.engBtn);
+        zzangBtn = (Button) findViewById(R.id.zzangBtn);
+        zzang2Btn = (Button) findViewById(R.id.zzangBtn2);
+        fraBtn = (Button) findViewById(R.id.fraBtn);
+        spaBtn = (Button) findViewById(R.id.spaBtn);
+        ducBtn = (Button) findViewById(R.id.ducBtn);
+        nihonBtn = (Button) findViewById(R.id.nihonBtn);
+        rusBtn = (Button) findViewById(R.id.rusBtn);
 
-        api = new TourAPI();
+
+        korBtn.setTag("Kor");
+        engBtn.setTag("Eng");
+        zzangBtn.setTag("Chs");
+        zzang2Btn.setTag("Cht");
+        fraBtn.setTag("Fre");
+        spaBtn.setTag("Spn");
+        ducBtn.setTag("Ger");
+        nihonBtn.setTag("Jpn");
+        rusBtn.setTag("Rus");
+
 /*
 
         korBtn.setBackgroundResource(R.drawable.button1);
@@ -101,52 +111,42 @@ public class MainActivity extends AppCompatActivity {
         rusBtn.setBackgroundResource(R.drawable.button1);
 
 */
+    }
 
 
-        //dbnum=(EditText)findViewById(R.id.dbnum); 테스트용
+    public void checkLanguage(View view){
+        //progressDialog = ProgressDialog.show(MainActivity.this,
+        //    "Please wait....", "Data Loading...");  //프로그래스 보여주기
+        customProgressDialog = new CustomProgressDialog(MainActivity.this);
+        customProgressDialog .getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        customProgressDialog.show();
+        String langBtn = (String) view.getTag();
+        Log.d("langBtn", langBtn + "");
+        api = new TourAPI(langBtn, "locationBasedList");
+        final Thread thread = new Thread(){
 
-        korBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {                                                 // 리싸이클러뷰 로~
-                //progressDialog = ProgressDialog.show(MainActivity.this,
-                    //    "Please wait....", "Data Loading...");  //프로그래스 보여주기
-                customProgressDialog = new CustomProgressDialog(MainActivity.this);
-                customProgressDialog .getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                customProgressDialog.show();
-                final Thread thread = new Thread(){
-
-                    @Override
-                    public void run() {
-                        api.locationBasedList(); //접속여부 확인
-                        try {
-                            api.xmlparse(); //파일화
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        //api.SystemOutPrintTour(); // 접속 후 받은 내용 프린트
-                        tour_list = api.GetTour("item");
-                        //progressDialog.dismiss(); //프로그레스 없애기
-                        customProgressDialog.dismiss();
-                        DBnum = "1";        // db에서 한글 데이터를 읽어 들일 목적으로 쓰였다면? 0 이 되어야 한다.(or DBnum - 1로 사용하여야 할것이다.)
-                        intent  = new Intent(getApplicationContext(), listpage.class);      // 정보가 이동될 액티비티를 지정한다.
-                        intent.putExtra("DBnum", DBnum);                                        // DBnum이라는 변수에 DBnum == 1 넣어 intent에 데이터를 추가하여 넘기게 된다.
-                        startActivity(intent);                                                    // 액티비티의 전환.(위에서 적어준 데이터들도 함깨 이동 된다.)
-                        finish();
-                    }
-                };
-                thread.start();
-            }
-        });
-        engBtn.setOnClickListener(new View.OnClickListener() {                            // listpage 로~ (리사이클러뷰 적용중인 페이지 ?)
-            @Override
-            public void onClick(View v) {
-                DBnum="2";
-                Toast.makeText(getApplicationContext(),"영문타입으로 이동, DBnum :"+DBnum, Toast.LENGTH_SHORT).show();
-                intent  = new Intent(getApplicationContext(), SearchForm.class);
-                intent.putExtra("DBnum", DBnum);
-                startActivity(intent);
+            public void run() {
+                //api.locationBasedList("127.05234", "37.645115", "5000"); //접속 실행 위도 : y, 경도 : x
+                api.locationBasedList();
+                try {
+                    api.xmlparse(); //파일화
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                //api.SystemOutPrintTour(); // 접속 후 받은 내용 프린트
+                tour_list = api.GetTour("item");
+                //progressDialog.dismiss(); //프로그레스 없애기
+                customProgressDialog.dismiss();
+                DBnum = "1";        // db에서 한글 데이터를 읽어 들일 목적으로 쓰였다면? 0 이 되어야 한다.(or DBnum - 1로 사용하여야 할것이다.)
+                intent  = new Intent(getApplicationContext(), listpage.class);      // 정보가 이동될 액티비티를 지정한다.
+                intent.putExtra("DBnum", DBnum);                                        // DBnum이라는 변수에 DBnum == 1 넣어 intent에 데이터를 추가하여 넘기게 된다.
+                startActivity(intent);                                                    // 액티비티의 전환.(위에서 적어준 데이터들도 함깨 이동 된다.)
                 finish();
             }
-        });
+        };
+        thread.start();
+
+
     }
 }
