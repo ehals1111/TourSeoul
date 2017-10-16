@@ -69,11 +69,15 @@ public class TourAPI {
 		urlBuilder.append("?ServiceKey=qk%2BGaqjIo5c4he7T4X4rz3wFRomQOavR7lfOUKTWAwQbWE4AMKZeNlXWTEF88gm85q0IBrCFdm74edYyMGORZQ%3D%3D");
 
 	}
+
+	// _language :  kor, eng
+	// _type :  locationBasedList (지도 좌표값으로
 	public TourAPI( String _language, String _type ){
 		
 		urlBuilder = new StringBuilder("http://api.visitkorea.or.kr/openapi/service/rest");
 		urlBuilder.append("/" + _language + "Service");
 		urlBuilder.append("/" + _type); /*URL*/
+		urlBuilder.append("?ServiceKey=qk%2BGaqjIo5c4he7T4X4rz3wFRomQOavR7lfOUKTWAwQbWE4AMKZeNlXWTEF88gm85q0IBrCFdm74edYyMGORZQ%3D%3D");
 	}
 	
 	public void locationBasedList()
@@ -95,7 +99,8 @@ public class TourAPI {
 			e.printStackTrace();
 		}		
 	}
-	
+
+	// _mapX : x
 	public void locationBasedList( String _mapX, String _mapY, String _radius)
 	{
 		urlBuilder.append("&numOfRows=" + numOfRows);

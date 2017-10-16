@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
+
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="com.google.android.provider.gsf.permission.READ_GSERVICES"/>
     <uses-permission android:name="com.example.web.tourseoul.location.permission.MAPS_RECEIVE"/>
@@ -30,6 +31,11 @@
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version"/>
+        <meta-data
+            android:name="com.kakao.sdk.AppKey"
+            android:value=" b61613b80b58735686c90d7000e1e13c">
+
+        </meta-data>
         <activity android:name=".StartPage">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

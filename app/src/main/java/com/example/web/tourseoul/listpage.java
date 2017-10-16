@@ -33,24 +33,22 @@ public class listpage extends AppCompatActivity{
 
 
     private Context mContext; //현재  context
+
     //database
 
     DBAccess dbAccess;
 
     private static MediaPlayer mp;
+
     Intent intent;
-
-    String DBnum;
-
 
     ViewPager pager;
 
-    static Boolean TourTeskEnd = true;
-
     Button soundBtn; //사운드 버튼 지정
     Button popupBtn;
-    ProgressDialog progressDialog; //로딩 중 화면 띄울 다이얼로그
     TourAPI api; //API에 접근
+
+    String langBtn; //언어 구분 변수
 
     //Speak out...
 
@@ -66,7 +64,7 @@ public class listpage extends AppCompatActivity{
 
         mContext = getApplicationContext();
         intent = getIntent();
-        DBnum = intent.getStringExtra("DBnum");
+        langBtn = intent.getStringExtra("langBtn");
         api = new TourAPI();
 
 
@@ -115,6 +113,8 @@ public class listpage extends AppCompatActivity{
                 showDialog(1);
             }
         });
+
+
 
 
         //viewPager 구성 시작

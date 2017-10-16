@@ -8,14 +8,19 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        >
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            android:id="@+id/scrollView">
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="12"
             tools:layout_editor_absoluteY="8dp"
             tools:layout_editor_absoluteX="8dp">
-
             <WebView
             android:id="@+id/imageView"
             android:layout_width="match_parent"
@@ -23,59 +28,59 @@
             android:adjustViewBounds="true"
             app:srcCompat="@drawable/c00101"
             android:scrollbars="none"
+
             />
-            <Button
-                android:layout_gravity="top|right"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:onClick="OnClickImg"
-                android:background="@drawable/mapicon"/>
-        </FrameLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            tools:layout_editor_absoluteY="8dp"
-            tools:layout_editor_absoluteX="8dp"
-            android:layout_weight="7"
-            >
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#00ddff"
-            android:orientation="horizontal">
-        <TextView
-            android:id="@+id/name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text=" 여긴 어디니"
-            android:textSize="25dp"
-            android:paddingBottom="5dp"
-            android:paddingTop="5dp"
-            android:layout_weight="1"
-            />
-         <Button
-             android:id="@+id/soundBtn"
-             android:layout_width="40dp"
-             android:layout_height="40dp"
-             android:layout_marginRight="5dp"
-             android:background="@drawable/sounda"
-             android:layout_gravity="center"/>
-        </LinearLayout>
-            <ScrollView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:fillViewport="true"
-                android:id="@+id/scrollView">
+                android:orientation="vertical"
+                >
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#00ddff"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:id="@+id/name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text=" 여긴 어디니"
+                        android:textSize="25dp"
+                        android:paddingBottom="5dp"
+                        android:paddingTop="5dp"
+                        android:layout_weight="1"
+                        />
+                    <Button
+                        android:id="@+id/soundBtn"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginRight="5dp"
+                        android:background="@drawable/sounda"
+                        android:layout_gravity="center"/>
+                </LinearLayout>
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#aa000000">
+                <TextView
+                    android:id="@+id/contents"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="현재 설명을 준비 중입니다."
+                    android:textSize="17dp"
+                    android:textColor="#ffffff"
+                    />
+                <Button
+                    android:layout_gravity="top|right"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:onClick="OnClickImg"
+                    android:background="@drawable/mapicon"/>
+                </FrameLayout>
+            </LinearLayout>
 
-        <TextView
-            android:id="@+id/contents"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="현재 설명을 준비 중입니다."
-            android:textSize="17dp"
-            />
-            </ScrollView>
-        </LinearLayout>
+
+            </FrameLayout>
+        </ScrollView>
     </LinearLayout>
 </LinearLayout>
