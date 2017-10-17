@@ -48,7 +48,7 @@ public class listpage extends AppCompatActivity{
     Button popupBtn;
     TourAPI api; //API에 접근
 
-    String langBtn; //언어 구분 변수
+    static String langBtn; //언어 구분 변수
 
     //Speak out...
 
@@ -209,8 +209,8 @@ public class listpage extends AppCompatActivity{
     //메뉴 다이얼로그 부분
     @Override
     protected Dialog onCreateDialog(int id) {
-        final String[] items = {"사적지", "관광지", "휴양지", "상업지", "이벤트", "숙    소"};
-        final boolean[] checkedItems = {true, true, true, true, true, true}; //
+        final String[] items = {"관광지", "문화시설", "행사/공연/축제", "여행코스", "레포츠", "숙박", "쇼핑", "음식점"};
+        final boolean[] checkedItems = {true, true, true, true, true, true, true, true}; //
         AlertDialog.Builder builder = new AlertDialog.Builder(listpage.this);
         builder.setTitle("검색 설정");
 //        builder.setMessage("메시지");

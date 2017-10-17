@@ -20,7 +20,7 @@ import org.xml.sax.InputSource;
 public class TourAPI {
 
 	StringBuilder urlBuilder; 		// url
-	String numOfRows = "500";		// NO필수
+	String numOfRows = "10";		// NO필수
 	
 	//String pageNo;				// NO필수 디폴트 1
 	

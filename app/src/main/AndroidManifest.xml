@@ -33,7 +33,7 @@
             android:value="@integer/google_play_services_version"/>
         <meta-data
             android:name="com.kakao.sdk.AppKey"
-            android:value=" b61613b80b58735686c90d7000e1e13c">
+            android:value="b61613b80b58735686c90d7000e1e13c">
 
         </meta-data>
         <activity android:name=".StartPage">

@@ -18,6 +18,8 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import static com.example.web.tourseoul.listpage.langBtn;
+
 /**
  * Created by WEB116 on 2017-10-10.
  */
@@ -98,7 +100,6 @@ public class viewPagerAdapter extends PagerAdapter implements TextToSpeech.OnIni
             name.setText(tour_list.get(position).getTitle());
             //contents.setText(list.get(position).getKor_s());
             speech = new TextToSpeech(context, this);
-        /*
             soundBtn.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
@@ -112,11 +113,11 @@ public class viewPagerAdapter extends PagerAdapter implements TextToSpeech.OnIni
                         soundOnOff = true;
                         Log.d("버튼 로그", "버튼 :" + soundOnOff+ "\nposition : " );
                         v.setBackgroundResource(R.drawable.sounda);
-                        speakOutNow(list.get(position).getEng_s());
+                        speakOutNow(tour_list.get(position).getTitle());
                     }
 
                 }
-            });*/
+            });
 
 
             container.addView(view);
@@ -162,7 +163,44 @@ public class viewPagerAdapter extends PagerAdapter implements TextToSpeech.OnIni
     @Override
     public void onInit(int status) {
         if (status == TextToSpeech.SUCCESS) {
-            int language = speech.setLanguage(Locale.ENGLISH);
+            int language = 0;
+            if (langBtn == "Kor"){
+                language = speech.setLanguage(Locale.KOREA);
+                Log.d("languageSetting", "현재 언어 : " + langBtn);
+            }
+            else if (langBtn.equals("Eng")){
+                language = speech.setLanguage(Locale.ENGLISH);
+            Log.d("languageSetting", "현재 언어 : " + langBtn);
+            }
+            else if (langBtn.equals("Chs")){
+                language = speech.setLanguage(Locale.SIMPLIFIED_CHINESE);
+                Log.d("languageSetting", "현재 언어 : " + langBtn);
+            }
+            else if (langBtn.equals("Cht")){
+                language = speech.setLanguage(Locale.TRADITIONAL_CHINESE);
+                Log.d("languageSetting", "현재 언어 : " + langBtn);
+            }
+            else if (langBtn.equals("Fre")){
+                language = speech.setLanguage(Locale.FRENCH);
+                Log.d("languageSetting", "현재 언어 : " + langBtn);
+            }
+            else if (langBtn.equals("Spn")){
+                language = speech.setLanguage(new Locale("spa", "ESP"));
+                Log.d("languageSetting", "현재 언어 : " + langBtn);
+            }
+            else if (langBtn.equals("Ger")){
+                language = speech.setLanguage(Locale.GERMANY);
+                Log.d("languageSetting", "현재 언어 : " + langBtn);
+            }
+            else if (langBtn.equals("Jap")){
+                language = speech.setLanguage(Locale.JAPAN);
+                Log.d("languageSetting", "현재 언어 : " + langBtn);
+            }
+            else if (langBtn.equals("Rus")){
+                language = speech.setLanguage(new Locale("ru"));
+                Log.d("languageSetting", "현재 언어 : " + langBtn);
+            }
+
             //int language = speech.setLanguage(new Locale("spa", "ESP"));
 
             if (language == TextToSpeech.LANG_MISSING_DATA || language == TextToSpeech.LANG_NOT_SUPPORTED) {
