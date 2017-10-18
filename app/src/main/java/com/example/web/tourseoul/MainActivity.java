@@ -115,15 +115,35 @@ public class MainActivity extends AppCompatActivity {
         final Thread thread = new Thread() {
             @Override
             public void run() {
-                api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), "5000"); //접속 실행 위도 : y, 경도 : x
+                if(langBtn.equals("Kor")) {
+                    api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 12, 10, 1); //접속 실행 위도 : y, 경도 : x
+                    api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 14, 10, 1); //접속 실행 위도 : y, 경도 : x
+                    api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 15, 10, 1); //접속 실행 위도 : y, 경도 : x
+                    api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 25, 10, 1); //접속 실행 위도 : y, 경도 : x
+                    api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 28, 10, 1); //접속 실행 위도 : y, 경도 : x
+                    api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 32, 10, 1); //접속 실행 위도 : y, 경도 : x
+                    api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 38, 10, 1); //접속 실행 위도 : y, 경도 : x
+                    api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 39, 10, 1); //접속 실행 위도 : y, 경도 : x
+                }else{
+                    api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 76, 10, 1); //접속 실행 위도 : y, 경도 : x
+                    api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 78, 10, 1); //접속 실행 위도 : y, 경도 : x
+                    api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 85, 10, 1); //접속 실행 위도 : y, 경도 : x
+                    api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 77, 10, 1); //접속 실행 위도 : y, 경도 : x
+                    api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 75, 10, 1); //접속 실행 위도 : y, 경도 : x
+                    api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 80, 10, 1); //접속 실행 위도 : y, 경도 : x
+                    api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 79, 10, 1); //접속 실행 위도 : y, 경도 : x
+                    api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 82, 10, 1); //접속 실행 위도 : y, 경도 : x
+                }
+
+                //api.locationBasedList("127.05686", "37.648208", 5000,12, 10, 1); //접속 실행 위도 : y, 경도 : x
+                Log.d("locationBase", Double.toString(gps.getLongitude()) + " " + Double.toString(gps.getLatitude()));
                 //api.locationBasedList();
                 try {
-                    api.xmlparse(); //파일화
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
                 //api.SystemOutPrintTour(); // 접속 후 받은 내용 프린트
-                tour_list = api.GetTour("item");
+                tour_list = api.GetTour();
                 //progressDialog.dismiss(); //프로그레스 없애기
                 customProgressDialog.dismiss();
                 intent = new Intent(getApplicationContext(), listpage.class);      // 정보가 이동될 액티비티를 지정한다.

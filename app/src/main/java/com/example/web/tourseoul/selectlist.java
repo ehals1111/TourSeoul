@@ -2,6 +2,7 @@ package com.example.web.tourseoul;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -35,6 +36,7 @@ public class selectlist extends AppCompatActivity {	//뷰를 보유하고 있기
     Button testBtn;	//테스트용 버튼 의미없음
     TextView testText;	//좌표표현을 확인하기 위한 택스트뷰 의미없음
     private static final String TAG="selectlist";	//로그를 찍기 위한태그 의미없음
+    Intent intent;
 
     SupportMapFragment mapFragment; //프래그먼트는 특수현태의 뷰로 안드로이드에서 지원하는 외부 어플(구글맵)의 값을 넣기 위한 뷰타입임 import com.google.android.gms.maps.SupportMapFragment;
     GoogleMap map;	//외부 프로그램인 구글맵을 메모리 할당 import com.google.android.gms.maps.GoogleMap 메니페스트에 퍼미션 필요
@@ -43,6 +45,7 @@ public class selectlist extends AppCompatActivity {	//뷰를 보유하고 있기
     protected void onCreate(@Nullable Bundle savedInstanceState) {	//뷰를 가지는 모든 자바파일은 해당 크리에이트를 보유해야 함
         super.onCreate(savedInstanceState);	//무슨 기능을 가지는지 모르므로 상속받은 전부를 불러옴
         setContentView(R.layout.selectlist);	//뷰의 형태를 가지는  xml을 로드해옴
+
 
         mapFragment=(SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);	//프래그먼트 온크리에이트 내에 메모리 할당
         mapFragment.getMapAsync(new OnMapReadyCallback() {	//맵을 사용하기 위해 단말기와 싱크로를 맞춤

@@ -94,31 +94,20 @@ class DBAccess extends SQLiteOpenHelper {
             myDataBase.close();
         super.close();
     }
-    public ArrayList<listViewBean> useDatabase() {
-        ArrayList<listViewBean> ar = new ArrayList<listViewBean>();
+/*
+
+    public ArrayList<TourData> useDatabase() {
+        ArrayList<TourData> ar = new ArrayList<TourData>();
         Cursor c = myDataBase.rawQuery("select * from test", null);
         for (int i = 0; i < c.getCount(); i++) {
-            listViewBean listViewBean = new listViewBean();
+            TourData TourData = new TourData();
             c.moveToNext();
-
-            listViewBean.setNum(c.getInt(0));
-            listViewBean.setMain(c.getInt(1));
-            listViewBean.setSub(c.getInt(2));
-            listViewBean.setKor_n(c.getString(3));
-            listViewBean.setKor_s(c.getString(4));
-            listViewBean.setEng_n(c.getString(5));
-            listViewBean.setEng_s(c.getString(6));
-            listViewBean.setX(c.getDouble(7));
-            listViewBean.setY(c.getDouble(8));
-            listViewBean.setImg(c.getString(9));
-            listViewBean.setImg_sub(c.getString(10));
-            listViewBean.setSound(c.getString(11));
-            ar.add(listViewBean);
         }
         c.close();
 
         return ar;
     }
+*/
 
 }
 

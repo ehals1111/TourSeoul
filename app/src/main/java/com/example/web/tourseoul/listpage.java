@@ -5,13 +5,19 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ContextThemeWrapper;
+import android.support.v7.widget.PopupMenu;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -47,6 +53,8 @@ public class listpage extends AppCompatActivity{
     Button soundBtn; //사운드 버튼 지정
     Button popupBtn;
     TourAPI api; //API에 접근
+    GPSInfo gps;
+    private CustomProgressDialog customProgressDialog;
 
     static String langBtn; //언어 구분 변수
 
@@ -64,35 +72,8 @@ public class listpage extends AppCompatActivity{
 
         mContext = getApplicationContext();
         intent = getIntent();
-        langBtn = intent.getStringExtra("langBtn");
-        api = new TourAPI();
+        langBtn = intent.getExtras().getString("langBtn");
 
-
-        //ourTesk tourTesk = new TourTesk(listpage.this); //AsyncTest를 통해 API 접속할 객체 생성
-        //tourTesk.execute(); // 접속 시도
-/*
-
-        progressDialog = ProgressDialog.show(this,
-                "Please wait....", "Here your message");
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER); // 다이얼로그 스타일 정의
-*/
-/*
-        final Thread thread = new Thread(){
-
-            @Override
-            public void run() {
-                api.locationBasedList(); //접속여부 확인
-                try {
-                    api.xmlparse(); //파일화
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                //api.SystemOutPrintTour(); // 접속 후 받은 내용 프린트
-                tour_list = api.GetTour("item");
-                progressDialog.dismiss();
-            }
-        };
-        thread.start();*/
 
         dbAccess = new DBAccess(mContext);
 
@@ -103,14 +84,22 @@ public class listpage extends AppCompatActivity{
         }
         dbAccess.openDataBase();
 
-        ArrayList<listViewBean> list = dbAccess.useDatabase();
-
-
         popupBtn = (Button)findViewById(R.id.popupBtn);
         popupBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showDialog(1);
+                //showDialog(1);
+                PopupMenu popupMenu = new PopupMenu(listpage.this, v);
+                getMenuInflater().inflate(R.menu.popup, popupMenu.getMenu());
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        return true;
+                    }
+
+                });
+                popupMenu.show();
+
             }
         });
 
@@ -137,10 +126,60 @@ public class listpage extends AppCompatActivity{
 
             @Override
             public void onPageSelected(int position) { //페이지가 넘어갔을 때 실행되는 명령
-                Log.d("onPageSelected", "2");
+                Log.d("onPageSelected", position +"");
                 if (soundOnOff) {
                     soundOnOff = false;
                     speech.stop();
+                }
+                Log.d("pagerCount", tour_list.size() + "");
+
+                if(position==tour_list.size() -1){
+                    gps = new GPSInfo(listpage.this);
+                    customProgressDialog = new CustomProgressDialog(listpage.this);
+                    customProgressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                    customProgressDialog.show();
+                    api = new TourAPI(langBtn, "locationBasedList");
+                    final Thread thread = new Thread() {
+                        @Override
+                        public void run() {
+                            if(langBtn.equals("Kor")) {
+                                api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 12, 10, 2); //접속 실행 위도 : y, 경도 : x
+                                api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 14, 10, 2); //접속 실행 위도 : y, 경도 : x
+                                api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 15, 10, 2); //접속 실행 위도 : y, 경도 : x
+                                api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 25, 10, 2); //접속 실행 위도 : y, 경도 : x
+                                api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 28, 10, 2); //접속 실행 위도 : y, 경도 : x
+                                api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 32, 10, 2); //접속 실행 위도 : y, 경도 : x
+                                api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 38, 10, 2); //접속 실행 위도 : y, 경도 : x
+                                api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 39, 10, 2); //접속 실행 위도 : y, 경도 : x
+                            }else{
+                                api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 76, 10, 2); //접속 실행 위도 : y, 경도 : x
+                                api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 78, 10, 2); //접속 실행 위도 : y, 경도 : x
+                                api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 85, 10, 2); //접속 실행 위도 : y, 경도 : x
+                                api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 77, 10, 2); //접속 실행 위도 : y, 경도 : x
+                                api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 75, 10, 2); //접속 실행 위도 : y, 경도 : x
+                                api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 80, 10, 2); //접속 실행 위도 : y, 경도 : x
+                                api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 79, 10, 2); //접속 실행 위도 : y, 경도 : x
+                                api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 82, 10, 2); //접속 실행 위도 : y, 경도 : x
+                            }
+
+                            //api.locationBasedList("127.05686", "37.648208", 5000,12, 10, 1); //접속 실행 위도 : y, 경도 : x
+                            Log.d("locationBase", Double.toString(gps.getLongitude()) + " " + Double.toString(gps.getLatitude()));
+                            //api.locationBasedList();
+                            try {
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            //api.SystemOutPrintTour(); // 접속 후 받은 내용 프린트
+                            tour_list = api.GetTour();
+                            //progressDialog.dismiss(); //프로그레스 없애기
+                            customProgressDialog.dismiss();
+                            viewPagerAdapter adapter = new viewPagerAdapter(getLayoutInflater(), tour_list, listpage.this);
+                            //ViewPager에 Adapter 설정
+                            pager.setAdapter(adapter);
+
+                        }
+                    };
+                    thread.start();
                 }
 
             }
@@ -183,7 +222,6 @@ public class listpage extends AppCompatActivity{
         });*/
     }
     //사운드 구현부분 종료//
-/*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) { //툴바에 메뉴 붙이기
 
@@ -194,18 +232,14 @@ public class listpage extends AppCompatActivity{
 
 
 
+    /*
     @Override
     public boolean onOptionsItemSelected(MenuItem item) { //툴바 안의 내용 클릭 시
-        item.setChecked(!item.isChecked());
 
         return false;
-    }*/
-    public void OnClickImg(View v) { //위치찾기 버튼 클릭 시 행동
-        intent  = new Intent(getApplicationContext(), selectlist.class);      // 정보가 이동될 액티비티를 지정한다.
-        startActivity(intent);                                                    // 액티비티의 전환.
-
-
     }
+*/
+
     //메뉴 다이얼로그 부분
     @Override
     protected Dialog onCreateDialog(int id) {

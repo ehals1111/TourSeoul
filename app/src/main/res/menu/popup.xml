@@ -4,33 +4,43 @@
         android:id="@+id/popup"
         android:checkableBehavior="all" >
         <item
-            android:id="@+id/sajuk"
-            android:title="사적지"
-            android:checked="true"
-            />
-        <item
-            android:id="@+id/kangkang"
+            android:id="@+id/tourist"
             android:title="관광지"
             android:checked="true"
             />
         <item
-            android:id="@+id/yashumi"
-            android:title="휴양지"
+            android:id="@+id/culture"
+            android:title="문화시설"
             android:checked="true"
             />
         <item
-            android:id="@+id/money"
-            android:title="상업지"
+            android:id="@+id/festival"
+            android:title="행사/공연/축제"
             android:checked="true"
             />
         <item
-            android:id="@+id/event"
-            android:title="이벤트"
+            android:id="@+id/transpor"
+            android:title="여행코스"
+            android:checked="true"
+            />
+        <item
+            android:id="@+id/reports"
+            android:title="레포츠"
             android:checked="true"
             />
         <item
             android:id="@+id/motel"
-            android:title="숙    박"
+            android:title="숙박"
+            android:checked="true"
+            />
+        <item
+            android:id="@+id/shopping"
+            android:title="쇼핑"
+            android:checked="true"
+            />
+        <item
+            android:id="@+id/dining"
+            android:title="음식점"
             android:checked="true"
             />
     </group>

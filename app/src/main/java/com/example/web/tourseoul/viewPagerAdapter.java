@@ -1,6 +1,7 @@
 package com.example.web.tourseoul;
 
 import android.content.Context;
+import android.content.Intent;
 import android.speech.tts.TextToSpeech;
 import android.support.v4.view.PagerAdapter;
 import android.util.Log;
@@ -27,12 +28,17 @@ import static com.example.web.tourseoul.listpage.langBtn;
 public class viewPagerAdapter extends PagerAdapter implements TextToSpeech.OnInitListener{
     private final Context context;
     LayoutInflater inflater;
+
     TextView name;
-    Button soundBtn;
-    public static Boolean soundOnOff = false;
-    WebView image;
     TextView contents;
-    ArrayList<listViewBean> list;
+    String contentsRP;
+    WebView image;
+    Button soundBtn;
+    Button mapSearch;
+
+    Intent intent;
+
+    public static Boolean soundOnOff = false;
     ArrayList<TourData> tour_list;
     public static TextToSpeech speech;
 
@@ -62,6 +68,8 @@ public class viewPagerAdapter extends PagerAdapter implements TextToSpeech.OnIni
 
         View view=null;
 
+        Log.d("instantiateItem", "인스턴스아이템");
+
         //새로운 View 객체를 Layoutinflater를 이용해서 생성
         //만들어질 View의 설계는 res폴더>>layout폴더>>listpagesub.xml 레이아웃 파일 사용
         view= inflater.inflate(R.layout.listpagesub, null);
@@ -72,6 +80,8 @@ public class viewPagerAdapter extends PagerAdapter implements TextToSpeech.OnIni
         name= (TextView)view.findViewById(R.id.name);
         contents = (TextView)view.findViewById(R.id.contents);
         soundBtn = (Button)view.findViewById(R.id.soundBtn);
+        mapSearch = (Button)view.findViewById(R.id.mapSearch);
+
 
 
         //ImageView에 현재 position 번째에 해당하는 이미지를 보여주기 위한 작업
@@ -96,8 +106,19 @@ public class viewPagerAdapter extends PagerAdapter implements TextToSpeech.OnIni
             image.getSettings().setLoadWithOverviewMode(true);
 
             webSettings.setUseWideViewPort(true); //웹뷰 와이드하게 보이도록 하기
+            contentsRP = tour_list.get(position).getContent();
+            /*
+            contentsRP = contentsRP.replaceAll("<br>", "\n");
+            contentsRP = contentsRP.replaceAll("<br />", "\n");
+            contentsRP = contentsRP.replaceAll("&nbsp;", " ");
+            contentsRP = contentsRP.replaceAll("<br/>", "\n");
+            contentsRP = contentsRP.replaceAll("&lsquo;", "'");
+            contentsRP = contentsRP.replaceAll("&rsquo;", "'");
+            */
 
+        //api.locationBasedList("126.981611", "37.568477", 500, 15, 10, 1); //(경도, 위도, 거리, 분류, 가져올 개수, 페이지 넘버)
             name.setText(tour_list.get(position).getTitle());
+            //contents.setText(contentsRP);
             //contents.setText(list.get(position).getKor_s());
             speech = new TextToSpeech(context, this);
             soundBtn.setOnClickListener(new View.OnClickListener(){
@@ -113,8 +134,21 @@ public class viewPagerAdapter extends PagerAdapter implements TextToSpeech.OnIni
                         soundOnOff = true;
                         Log.d("버튼 로그", "버튼 :" + soundOnOff+ "\nposition : " );
                         v.setBackgroundResource(R.drawable.sounda);
-                        speakOutNow(tour_list.get(position).getTitle());
+                        speakOutNow(contentsRP);
                     }
+
+                }
+            });
+
+            mapSearch.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    intent  = new Intent(context, selectlist.class);      // 정보가 이동될 액티비티를 지정한다.
+                    Double getMapY = tour_list.get(position).getMapY();
+                    Double getMapX = tour_list.get(position).getMapX();
+                    intent.putExtra("getMapY", getMapY);
+                    intent.putExtra("getMapX", getMapX);
+                    context.startActivity(intent);                                                    // 액티비티의 전환
 
                 }
             });
