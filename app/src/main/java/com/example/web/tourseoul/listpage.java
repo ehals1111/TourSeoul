@@ -70,11 +70,11 @@ public class listpage extends AppCompatActivity{
 
     EditText searchText;
     Button searchBtn; //검색 버튼
-    Button soundBtn; //사운드 버튼 지정
     Button popupBtn;
     TourAPI api; //API에 접근
     GPSInfo gps;
     private CustomProgressDialog customProgressDialog;
+    int APIPage = 2; //페이지 체크
 
     static String langBtn; //언어 구분 변수
 
@@ -243,7 +243,7 @@ public class listpage extends AppCompatActivity{
         //PagerAdapter를 상속받은 viewPagerAdapter 객체 생성
         //viewPagerAdapter LayoutInflater 객체 전달
         //viewPagerAdapter adapter = new viewPagerAdapter(getLayoutInflater(), list, this);
-        viewPagerAdapter adapter = new viewPagerAdapter(getLayoutInflater(), tour_list, this);
+        final viewPagerAdapter adapter = new viewPagerAdapter(getLayoutInflater(), tour_list, this);
         //ViewPager에 Adapter 설정
         pager.setAdapter(adapter);
 
@@ -261,7 +261,7 @@ public class listpage extends AppCompatActivity{
                 }
                 Log.d("pagerCount", tour_list.size() + "");
 
-                if(position==tour_list.size() -1){
+                if(position==tour_list.size() -2){
                     gps = new GPSInfo(listpage.this);
                     customProgressDialog = new CustomProgressDialog(listpage.this);
                     customProgressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
@@ -270,40 +270,17 @@ public class listpage extends AppCompatActivity{
                     final Thread thread = new Thread() {
                         @Override
                         public void run() {
-                            if(langBtn.equals("Kor")) {
-                                api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 12, 10, 2); //접속 실행 위도 : y, 경도 : x
-                                api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 14, 10, 2); //접속 실행 위도 : y, 경도 : x
-                                api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 15, 10, 2); //접속 실행 위도 : y, 경도 : x
-                                api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 25, 10, 2); //접속 실행 위도 : y, 경도 : x
-                                api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 28, 10, 2); //접속 실행 위도 : y, 경도 : x
-                                api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 32, 10, 2); //접속 실행 위도 : y, 경도 : x
-                                api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 38, 10, 2); //접속 실행 위도 : y, 경도 : x
-                                api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 39, 10, 2); //접속 실행 위도 : y, 경도 : x
-                            }else{
-                                api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 76, 10, 2); //접속 실행 위도 : y, 경도 : x
-                                api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 78, 10, 2); //접속 실행 위도 : y, 경도 : x
-                                api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 85, 10, 2); //접속 실행 위도 : y, 경도 : x
-                                api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 77, 10, 2); //접속 실행 위도 : y, 경도 : x
-                                api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 75, 10, 2); //접속 실행 위도 : y, 경도 : x
-                                api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 80, 10, 2); //접속 실행 위도 : y, 경도 : x
-                                api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 79, 10, 2); //접속 실행 위도 : y, 경도 : x
-                                api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 82, 10, 2); //접속 실행 위도 : y, 경도 : x
+                            for (int i = 0; i < 8; i++) {
+                                api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, selectedNum[i], APIPage, 2); //접속 실행 위도 : y, 경도 : x
                             }
-
                             //api.locationBasedList("127.05686", "37.648208", 5000,12, 10, 1); //접속 실행 위도 : y, 경도 : x
                             Log.d("locationBase", Double.toString(gps.getLongitude()) + " " + Double.toString(gps.getLatitude()));
                             //api.locationBasedList();
-                            try {
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
                             //api.SystemOutPrintTour(); // 접속 후 받은 내용 프린트
-                            tour_list = api.GetTour();
+                            adapter.addItem(api.GetTour());
                             //progressDialog.dismiss(); //프로그레스 없애기
                             customProgressDialog.dismiss();
-                            viewPagerAdapter adapter = new viewPagerAdapter(getLayoutInflater(), tour_list, listpage.this);
-                            //ViewPager에 Adapter 설정
-                            pager.setAdapter(adapter);
+                            APIPage++;
 
                         }
                     };
@@ -419,9 +396,4 @@ public class listpage extends AppCompatActivity{
 
     //프로그래스 다이얼로그 부분
 
-    @Override
-    protected void onDestroy() {
-        speech.shutdown();
-        super.onDestroy();
-    }
 }

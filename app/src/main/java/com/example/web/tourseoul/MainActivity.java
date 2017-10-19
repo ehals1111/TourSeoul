@@ -116,23 +116,23 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 if(langBtn.equals("Kor")) {
-                    api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 12, 10, 1); //접속 실행 위도 : y, 경도 : x
-                    api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 14, 10, 1); //접속 실행 위도 : y, 경도 : x
-                    api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 15, 10, 1); //접속 실행 위도 : y, 경도 : x
-                    api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 25, 10, 1); //접속 실행 위도 : y, 경도 : x
-                    api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 28, 10, 1); //접속 실행 위도 : y, 경도 : x
-                    api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 32, 10, 1); //접속 실행 위도 : y, 경도 : x
-                    api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 38, 10, 1); //접속 실행 위도 : y, 경도 : x
-                    api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 39, 10, 1); //접속 실행 위도 : y, 경도 : x
+                    api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 12, 2, 1); //접속 실행 위도 : y, 경도 : x
+                    api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 14, 2, 1); //접속 실행 위도 : y, 경도 : x
+                    api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 15, 2, 1); //접속 실행 위도 : y, 경도 : x
+                    api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 25, 2, 1); //접속 실행 위도 : y, 경도 : x
+                    api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 28, 2, 1); //접속 실행 위도 : y, 경도 : x
+                    api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 32, 2, 1); //접속 실행 위도 : y, 경도 : x
+                    api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 38, 2, 1); //접속 실행 위도 : y, 경도 : x
+                    api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 39, 2, 1); //접속 실행 위도 : y, 경도 : x
                 }else{
-                    api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 76, 10, 1); //접속 실행 위도 : y, 경도 : x
-                    api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 78, 10, 1); //접속 실행 위도 : y, 경도 : x
-                    api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 85, 10, 1); //접속 실행 위도 : y, 경도 : x
-                    api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 77, 10, 1); //접속 실행 위도 : y, 경도 : x
-                    api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 75, 10, 1); //접속 실행 위도 : y, 경도 : x
-                    api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 80, 10, 1); //접속 실행 위도 : y, 경도 : x
-                    api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 79, 10, 1); //접속 실행 위도 : y, 경도 : x
-                    api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 82, 10, 1); //접속 실행 위도 : y, 경도 : x
+                    api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 76, 2, 1); //접속 실행 위도 : y, 경도 : x
+                    api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 78, 2, 1); //접속 실행 위도 : y, 경도 : x
+                    api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 85, 2, 1); //접속 실행 위도 : y, 경도 : x
+                    api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 77, 2, 1); //접속 실행 위도 : y, 경도 : x
+                    api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 75, 2, 1); //접속 실행 위도 : y, 경도 : x
+                    api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 80, 2, 1); //접속 실행 위도 : y, 경도 : x
+                    api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 79, 2, 1); //접속 실행 위도 : y, 경도 : x
+                    api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, 82, 2, 1); //접속 실행 위도 : y, 경도 : x
                 }
 
                 //api.locationBasedList("127.05686", "37.648208", 5000,12, 10, 1); //접속 실행 위도 : y, 경도 : x

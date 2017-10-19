@@ -2,8 +2,10 @@ package com.example.web.tourseoul;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Parcelable;
 import android.speech.tts.TextToSpeech;
 import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -63,10 +65,10 @@ public class viewPagerAdapter extends PagerAdapter implements TextToSpeech.OnIni
     //첫번째 파라미터 : ViewPager
     //두번째 파라미터 : ViewPager가 보여줄 View의 위치(가장 처음부터 0,1,2,3...)
     @Override
-    public Object instantiateItem(ViewGroup container, final int position) {
+    public Object instantiateItem(View pager, final int position) {
         // TODO Auto-generated method stub
-
         View view=null;
+
 
         Log.d("instantiateItem", "인스턴스아이템");
 
@@ -155,7 +157,7 @@ public class viewPagerAdapter extends PagerAdapter implements TextToSpeech.OnIni
             });
 
 
-            container.addView(view);
+        ((ViewPager)pager).addView(view);
 
 
 
@@ -194,6 +196,25 @@ public class viewPagerAdapter extends PagerAdapter implements TextToSpeech.OnIni
         }
     }
 
+    @Override
+    public void startUpdate(ViewGroup container) {
+        super.startUpdate(container);
+    }
+
+    @Override
+    public void finishUpdate(View container) {
+        super.finishUpdate(container);
+    }
+
+    @Override
+    public Parcelable saveState() {
+        return super.saveState();
+    }
+
+    @Override
+    public void restoreState(Parcelable state, ClassLoader loader) {
+        super.restoreState(state, loader);
+    }
 
     @Override
     public void onInit(int status) {
@@ -247,6 +268,11 @@ public class viewPagerAdapter extends PagerAdapter implements TextToSpeech.OnIni
 
 
 
+    }
+    public void addItem(ArrayList<TourData> data){
+        tour_list.addAll(data);
+
+        notifyDataSetChanged();
     }
     private void speakOutNow(String text) {
         String Speaktext = text;
