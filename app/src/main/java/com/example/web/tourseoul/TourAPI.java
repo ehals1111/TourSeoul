@@ -1,11 +1,11 @@
 package com.example.web.tourseoul;
-import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -27,7 +27,7 @@ public class TourAPI {
 	StringBuilder url; 		// url
 
 	String language = "Kor";
-	//String apiType = "locationBasedList";
+	String apiType = "locationBasedList";
 
 	String numOfRows = "5";		// NO필수
 	String pageNo;					// NO필수 디폴트 1
@@ -85,8 +85,7 @@ public class TourAPI {
 
 	public TourAPI( String _language, String _type ){
 		language = _language;
-		//apiType = _type;
-		Log.d("TourAPI", "language = " + language);
+		apiType = _type;
 
 		url = new StringBuilder("http://api.visitkorea.or.kr/openapi/service/rest");
 		url.append("/" + _language + "Service");
@@ -136,7 +135,7 @@ public class TourAPI {
 		urlBuilder.append("&MobileOS=" + MobileOS);
 		urlBuilder.append("&MobileApp=" + MobileApp);
 		if( _contentTypeId != 0 )
-		urlBuilder.append("&contentTypeId=" + _contentTypeId);			// NO필수
+			urlBuilder.append("&contentTypeId=" + _contentTypeId);			// NO필수
 		urlBuilder.append("&mapX=" + _mapX);
 		urlBuilder.append("&mapY=" + _mapY);
 		urlBuilder.append("&radius=" + _radius);
@@ -173,6 +172,46 @@ public class TourAPI {
 
 		} catch (Exception e) {
 			System.out.println("TourAPI.detailCommon().inXml(), xmlparse() catch : 고쳐 ");
+			e.printStackTrace();
+		}
+	}
+
+	public void searchKeyword( String _keyword, int _contentTypeId, int _numOfRows, int _page_n)
+	{
+		StringBuilder urlBuilder = new StringBuilder();
+
+		urlBuilder.append("&numOfRows=" + _numOfRows);		// 한페이지에 받을 결과 수
+		urlBuilder.append("&pageNo=" + _page_n);				// NO필수 디폴트 1
+		urlBuilder.append("&arrange=E");						// 데이터를 받는 정렬 순서. (E : 조회순)
+		urlBuilder.append("&MobileOS=" + MobileOS);
+		urlBuilder.append("&MobileApp=" + MobileApp);
+		if( _contentTypeId != 0 )
+			urlBuilder.append("&contentTypeId=" + _contentTypeId);			// NO필수
+
+		String keyword;
+		try{
+			//keyword = URLEncoder.encode( _keyword, "UTF-8");
+			urlBuilder.append("&keyword=" + URLEncoder.encode( _keyword, "UTF-8"));					// 필수
+		} catch (Exception e){
+			System.out.println("TourAPI.searchKeyword() catch : URLEncoder.encode() 에러");
+			e.printStackTrace();
+		}
+
+
+//		urlBuilder.append("&mapX=" + _mapX);
+//		urlBuilder.append("&mapY=" + _mapY);
+//		urlBuilder.append("&radius=" + _radius);
+
+		//apiDataType = DETAIL;
+
+		try{
+
+			inXml(urlBuilder);													// xml문서로 데이터를 구해온다.
+			xmlparse();													// 문서를 분석하기위한 준비.
+			SetTourData("item");
+
+		} catch (Exception e) {
+			System.out.println("TourAPI.locationBasedList().inXml(), xmlparse() catch : 고쳐 ");
 			e.printStackTrace();
 		}
 	}
@@ -235,7 +274,7 @@ public class TourAPI {
 		}
 
 		// 결과 출력
-		//System.out.println(" 결과 : " + ToUrData.toString());
+		System.out.println(" 결과 : " + ToUrData.toString());
 
 		//break;
 
@@ -413,12 +452,11 @@ public class TourAPI {
 					tour_data.setContentId( contentid );
 					value_count++;																					// 반드시 값을 받아야만 하는경우 +1
 
-/*					TourAPI datail = new TourAPI( language, "detailCommon" );
-					datail.detailCommon( contentid );																// 해설(설명)부분 가져오기.
-					String content = datail.GetValueOfDetail(_tag_name, 0);
-					if( content != null)
-						tour_data.setContent( content );
-						*/
+//				TourAPI datail = new TourAPI( language, "detailCommon" );
+//				datail.detailCommon( contentid );																// 해설(설명)부분 가져오기.
+//				String content = datail.GetValueOfDetail(_tag_name, 0);
+//				if( content != null)
+//					tour_data.setContent( content );
 
 					break;
 
@@ -490,13 +528,33 @@ public class TourAPI {
 					tour_data.setTitle( value );
 					value_count++;																					// 반드시 값을 받아야만 하는경우 +1
 					break;
+
+				case "tel":
+					value = GetTag(_tag_name).item(_n).getChildNodes().item(i).getChildNodes().item(0).getNodeValue();
+					//System.out.println(" " + _n + "번째item,     item_length + " + item_length + "     i : " + i + "     title : " + value );
+					tour_data.setTel( value );
+					value_count++;																					// 반드시 값을 받아야만 하는경우 +1
+					break;
 			}
 			//System.out.println();
 
 
 		}
 
-		if( value_count == 11)																					// 11가지 데이터를 모두 받아온 경우만, ( 현재  +1 이 11개 체크)
+		// 총 +1이 12개 이나 dist는 위치기반 찾기에서만 선택이 되어진다. searchKeyword에서는 찾을수가 없다. 대신 tel을 포함하여 그 이상이면,
+
+		int api_check = 0;
+		switch(apiType)
+		{
+			case "locationBasedList" :
+				api_check = 11;
+				break;
+			case "searchKeyword" :
+				api_check = 10;
+				break;
+		}
+
+		if( value_count >= api_check)																					// 11가지 데이터를 모두 받아온 경우만, ( 현재  +1 이 11개 체크)
 			return tour_data;
 		else
 			return null;

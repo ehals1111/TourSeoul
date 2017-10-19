@@ -128,6 +128,7 @@ public class viewPagerAdapter extends PagerAdapter implements TextToSpeech.OnIni
                         soundOnOff = false;
                         v.setBackgroundResource(R.drawable.soundb);
                         speech.stop();
+
                         Log.d("버튼 로그", "버튼 :" + soundOnOff+ "\nposition : " );
 
                     }else {

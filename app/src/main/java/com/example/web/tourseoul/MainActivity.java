@@ -138,10 +138,6 @@ public class MainActivity extends AppCompatActivity {
                 //api.locationBasedList("127.05686", "37.648208", 5000,12, 10, 1); //접속 실행 위도 : y, 경도 : x
                 Log.d("locationBase", Double.toString(gps.getLongitude()) + " " + Double.toString(gps.getLatitude()));
                 //api.locationBasedList();
-                try {
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
                 //api.SystemOutPrintTour(); // 접속 후 받은 내용 프린트
                 tour_list = api.GetTour();
                 //progressDialog.dismiss(); //프로그레스 없애기

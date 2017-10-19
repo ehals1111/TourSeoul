@@ -13,6 +13,7 @@ public class TourData implements Comparable{
 	String title;						// 관광지명
 	String content; 					// 설명글
 	String address;						// 주소
+	String tel;								// 전화번호
 	String content_sub;					// 중분류
 	String small_image;					// 썸네일 이미지
 	String big_image;					// 큰 이미지
@@ -100,6 +101,14 @@ public class TourData implements Comparable{
 		this.address = address;
 	}
 
+	public String getTel() {
+		return tel;
+	}
+
+	public void setTel(String tel) {
+		this.tel = tel;
+	}
+
 	public String getContentSub() {
 		return content_sub;
 	}
@@ -141,7 +150,8 @@ public class TourData implements Comparable{
 		str += "address : " + address + "\n" ;
 		str += "content_sub : " + content_sub + "\n" ;
 		str += "small_image : " + small_image + "\n" ;
-		str += "big_image : " + big_image + "\n\n" ;
+		str += "big_image : " + big_image + "\n" ;
+		str += "tel : " + tel + "\n\n" ;
 
 		return str;
 
