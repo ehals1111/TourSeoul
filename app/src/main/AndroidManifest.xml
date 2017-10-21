@@ -36,7 +36,7 @@
             android:value="b61613b80b58735686c90d7000e1e13c">
 
         </meta-data>
-        <activity android:name=".StartPage">
+        <activity android:name=".tmapTest">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -48,7 +48,6 @@
         </activity>-->
         <activity android:name=".MainActivity"></activity>
         <activity android:name=".listpage"></activity>
-        <activity android:name=".SearchForm"></activity>
         <activity android:name=".selectlist"></activity>
     </application>
 
