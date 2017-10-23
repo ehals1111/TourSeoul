@@ -36,7 +36,7 @@
             android:value="b61613b80b58735686c90d7000e1e13c">
 
         </meta-data>
-        <activity android:name=".tmapTest">
+        <activity android:name=".StartPage">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

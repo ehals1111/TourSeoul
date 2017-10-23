@@ -74,7 +74,8 @@ public class TourAPI {
 //	public final static String 숙박 = "32";
 //	public final static String 쇼핑 = "38";
 //	public final static String 음식점 = "39";
-//	public final static String 선택안함 = "0";
+
+//	public final static String 선택안함 = "0"
 
 	public TourAPI(){
 

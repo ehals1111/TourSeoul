@@ -3,6 +3,7 @@ package com.example.web.tourseoul;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.ClipData;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -52,8 +53,11 @@ public class listpage extends AppCompatActivity{
     boolean diningchk=true;
     //체크여부 확인부분 종료
 
-    int[] selectedNum = null;
-    boolean[] selectedChk = null;
+
+
+    int[] selectedNum = null; //팝업메뉴 컨텐트아이디값 변경
+    boolean[] selectedChk = null; //팝업메뉴 체크 여부 확인
+    String[] popupItemTitle = null;
 
 
     private Context mContext; //현재  context
@@ -75,6 +79,7 @@ public class listpage extends AppCompatActivity{
     GPSInfo gps;
     private CustomProgressDialog customProgressDialog;
     int APIPage = 2; //페이지 체크
+    boolean lastPageChk = true;
 
     static String langBtn; //언어 구분 변수
 
@@ -96,6 +101,65 @@ public class listpage extends AppCompatActivity{
         else
             selectedNum = new int[]{76, 78, 85, 77, 75, 80, 79, 82};
 
+        if(langBtn.equals("Eng"))
+            popupItemTitle = new String[]{"Tourlist Atractions", "Cultural Facilities", "Festivals/Events/Performances", "Transportation", "Leisure/Sports", "Accommodation", "Shopping", "Dining"};
+        else if(langBtn.equals("Rus"))
+            popupItemTitle = new String[]{"Туристические достопримечательности", "Объекты культуры", "Фестивали/Мероприятия/Выступления", "Транспорт", "Досуг/Спорт", "Проживание", "Шоппинг", "Питание"};
+        else if(langBtn.equals("Spn"))
+            popupItemTitle = new String[]{"Atracciones turísticas",
+                    "Instalaciones culturales",
+                    "Festivales/Eventos/Espectáculos",
+                    "Transporte",
+                    "Ocio/Deportes",
+                    "Alojamiento",
+                    "Compras",
+                    "Comida"};
+        else if(langBtn.equals("Fre"))
+            popupItemTitle = new String[]{"Tourist Attractions",
+                    "Equipements culturels",
+                    "Festivals/Événements/Performances",
+                    "Transport",
+                    "Loisirs/Sports",
+                    "Logement",
+                    "Shopping",
+                    "Cuisine"};
+        else if(langBtn.equals("Cht"))
+            popupItemTitle = new String[]{"旅游景点",
+                    "文化设施",
+                    "庆典/公演/活动",
+                    "交通",
+                    "休闲运动",
+                    "住宿",
+                    "购物",
+                    "饮食"};
+        else if(langBtn.equals("Chs"))
+            popupItemTitle = new String[]{"景點",
+                    "文化設施",
+                    "慶典/表演/活動",
+                    "交通",
+                    "休閒運動",
+                    "住宿",
+                    "購物",
+                    "飲食"};
+        else if(langBtn.equals("Ger"))
+            popupItemTitle = new String[]{"Touristenattraktionen",
+                    "Kulturelle Einrichtungen",
+                    "Festivals/Events/Performances",
+                    "Verkehr",
+                    "Freizeit/Sport",
+                    "Unterkünfte",
+                    "Shopping",
+                    "Essen"};
+        else if(langBtn.equals("Jpn"))
+            popupItemTitle = new String[]{"観光地",
+                    "文化施設",
+                    "祭り／公演/イベント",
+                    "交通",
+                    "レジャースポーツ",
+                    "宿泊",
+                    "ショッピング",
+                    "グルメ"};
+
         dbAccess = new DBAccess(mContext);
 
         try {
@@ -112,6 +176,10 @@ public class listpage extends AppCompatActivity{
             public void onClick(final View v) {
                 final PopupMenu popupMenu = new PopupMenu(listpage.this, v);
                 getMenuInflater().inflate(R.menu.popup, popupMenu.getMenu());
+                if(!langBtn.equals("Kor")) {
+                    for (int i = 0; i < 8; i++)
+                        popupMenu.getMenu().getItem(i).setTitle(popupItemTitle[i]);
+                }
                 popupMenu.getMenu().getItem(0).setChecked(touristchk);
                 popupMenu.getMenu().getItem(1).setChecked(culturechk);
                 popupMenu.getMenu().getItem(2).setChecked(festivalchk);
@@ -254,17 +322,22 @@ public class listpage extends AppCompatActivity{
 
             @Override
             public void onPageSelected(int position) { //페이지가 넘어갔을 때 실행되는 명령
+
                 Log.d("onPageSelected", position +"");
                 if (soundOnOff) {
                     soundOnOff = false;
                     speech.stop();
                 }
                 Log.d("pagerCount", tour_list.size() + "");
+                if (position == tour_list.size() - 1) {
+                    lastPageChk = false;
+                }
 
-                if(position==tour_list.size() -2){
+                if(position==tour_list.size() -2 && lastPageChk){
                     gps = new GPSInfo(listpage.this);
                     customProgressDialog = new CustomProgressDialog(listpage.this);
                     customProgressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                    customProgressDialog.setCanceledOnTouchOutside(false);
                     customProgressDialog.show();
                     api = new TourAPI(langBtn, "locationBasedList");
                     final Thread thread = new Thread() {
@@ -308,7 +381,6 @@ public class listpage extends AppCompatActivity{
                 final Thread thread = new Thread() {
                     @Override
                     public void run() {
-                        if (langBtn.equals("Kor")) {
                             for (int i = 0; i < 8; i++) {
                                 if (selectedChk[i]) {
                                     api.searchKeyword(searchText.getText().toString(), selectedNum[i], 3, 1);
@@ -317,9 +389,9 @@ public class listpage extends AppCompatActivity{
                             }//for
                             tour_list=api.GetTour();
                             intent = new Intent(getApplicationContext(), listpage.class);      // 정보가 이동될 액티비티를 지정한다.
+                            intent.putExtra("langBtn", langBtn);                                        // DBnum이라는 변수에 DBnum == 1 넣어 intent에 데이터를 추가하여 넘기게 된다.
                             startActivity(intent);                                                    // 액티비티의 전환.(위에서 적어준 데이터들도 함깨 이동 된다.
 
-                        }//if
                     }//run
                 };//Thread
                 thread.start();

@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.RelativeLayout;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.skp.Tmap.TMapData;
 import com.skp.Tmap.TMapPoint;
 import com.skp.Tmap.TMapPolyLine;
@@ -25,6 +26,7 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.logging.LogManager;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -36,6 +38,9 @@ import javax.xml.parsers.ParserConfigurationException;
  */
 
 public class tmapTest extends Activity {
+
+    ArrayList<TMapPoint> saveRoute=new ArrayList<TMapPoint>();
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,16 +64,38 @@ public class tmapTest extends Activity {
         TMapPoint point1 = new TMapPoint(37.5801859611,126.9767235747);
         TMapPoint point2 = new TMapPoint(37.5658042673,126.9749158128);
         final TMapData tMapData = new TMapData();
+        final ArrayList<TMapPoint> passList= new ArrayList<TMapPoint>();
 
 
-        tMapData.findPathDataWithType(TMapData.TMapPathType.CAR_PATH, point1, point2, new TMapData.FindPathDataListenerCallback() {
+
+
+        tMapData.findPathDataWithType(TMapData.TMapPathType.CAR_PATH, point1, point2, passList,0, new TMapData.FindPathDataListenerCallback() {
             @Override
             public void onFindPathData(TMapPolyLine tMapPolyLine) {
                 tmapView.addTMapPath(tMapPolyLine);
+                saveRoute=tMapPolyLine.getLinePoint();
+                double firstPointx=saveRoute.get(0).getLatitude();
+                double firstPointy=saveRoute.get(0).getLongitude();
+                double secondPointx=saveRoute.get(1).getLatitude();
+                double secondPointy=saveRoute.get(1).getLongitude();
+
+
+                Log.d("firstPoint","x좌표 : "+firstPointx+"y좌표 : "+firstPointy);
+                Log.d("secondPoint","x좌표 : "+secondPointx+"y좌표 : "+secondPointy);
+                Log.d("배열 내부","saveRoute : "+saveRoute.size());
+
+
                 double wayDistance = tMapPolyLine.getDistance();
                 Log.d("tmapview","Distance: " + wayDistance + "M");
             }
         });
+        TMapPoint temp;
+        temp=saveRoute.get(0);
+        LatLng googlePoint;
+        double xx=temp.getLatitude();
+        double yy=temp.getLongitude();
+
+        googlePoint=new LatLng(xx, yy);
 /*
 
         tMapData.findPathData(point1, point2, new TMapData.FindPathDataListenerCallback() {

@@ -32,7 +32,7 @@
                 >
                 <Button
                     android:id="@+id/korBtn"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:text="KOREAN"
@@ -43,7 +43,7 @@
                     />
                 <Button
                     android:id="@+id/engBtn"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:text="English"
@@ -54,10 +54,10 @@
                     />
                 <Button
                     android:id="@+id/rusBtn"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:text="russia"
+                    android:text="русский "
                     android:textSize="20dp"
                     android:textStyle="bold"
                     android:onClick="checkLanguage"
@@ -71,7 +71,7 @@
                 android:layout_weight="1"
                 android:weightSum="3">
                 <Button
-                    android:id="@+id/nihonBtn"
+                    android:id="@+id/team"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="2"
@@ -88,7 +88,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:text="spain"
+                    android:text="Español"
                     android:textSize="20dp"
                     android:textStyle="bold"
                     android:onClick="checkLanguage"
@@ -104,10 +104,10 @@
                 >
                 <Button
                     android:id="@+id/fraBtn"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:text="france"
+                    android:text="Français"
                     android:textSize="20dp"
                     android:textStyle="bold"
                     android:onClick="checkLanguage"
@@ -116,10 +116,10 @@
 
                 <Button
                     android:id="@+id/zzangBtn"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:text="china 1"
+                    android:text="漢語"
                     android:textSize="20dp"
                     android:textStyle="bold"
                     android:onClick="checkLanguage"
@@ -128,10 +128,10 @@
 
                 <Button
                     android:id="@+id/zzangBtn2"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:text="china 2"
+                    android:text="汉语"
                     android:textSize="20dp"
                     android:textStyle="bold"
                     android:onClick="checkLanguage"
@@ -143,31 +143,42 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:weightSum="3"
                 >
                 <Button
                     android:id="@+id/ducBtn"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:text="GERMANY"
+                    android:text="Deutsch"
                     android:textSize="20dp"
                     android:textStyle="bold"
                     android:onClick="checkLanguage"
                     android:background="#fff0b2"
                     />
+                    <Button
+                        android:id="@+id/nihonBtn"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="日本語"
+                        android:textSize="20dp"
+                        android:textStyle="bold"
+                        android:onClick="checkLanguage"
+                        android:background="#9fffcf"
+                        />
 
                 <Button
-                    android:id="@+id/test2"
-                    android:layout_width="0dp"
+                    android:id="@+id/test3"
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_weight="2"
+                    android:layout_weight="1"
                     android:text="ToUrSeoul app"
                     android:textSize="20dp"
                     android:textStyle="bold"
                     android:onClick="checkLanguage"
                     android:background="#ffb2b2"
                     />
-
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

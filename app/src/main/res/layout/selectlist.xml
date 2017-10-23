@@ -2,9 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <EditText
+    <android.support.v7.widget.Toolbar
         android:layout_width="match_parent"
-        android:hint="메뉴바를 위한 자리입니다"
         android:background="@color/colorAccent"
         android:layout_height="wrap_content" />
 
@@ -12,31 +11,22 @@
         android:layout_width="match_parent"
         android:layout_height="400dp"
         android:orientation="vertical">
-            <fragment
-                android:id="@+id/map"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                class="com.google.android.gms.maps.SupportMapFragment"/>
+        <fragment
+            android:id="@+id/map"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            class="com.google.android.gms.maps.SupportMapFragment"/>
         <ListView
             android:layout_width="match_parent"
             android:layout_height="100dp">
         </ListView>
 
     </LinearLayout>
-    <Button
+    <ListView
         android:background="#FFFFF000"
         android:id="@+id/testBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="현재 위치 확인"
-        android:textStyle="bold"
-        android:textColor="#F0FF00FF"/>
-    <TextView
-        android:background="#FFFFF000"
-        android:id="@+id/testText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="현재 위치 확인"
         android:textStyle="bold"
         android:textColor="#F0FF00FF"/>
 </LinearLayout>

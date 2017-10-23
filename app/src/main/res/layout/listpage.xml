@@ -45,6 +45,14 @@
         </LinearLayout>
 
     </android.support.v7.widget.Toolbar>
+
+        <SeekBar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="200000"
+            android:progress="5000"
+            />
+
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
