@@ -12,6 +12,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.annotation.Size;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
@@ -25,6 +26,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -59,12 +61,13 @@ public class listpage extends AppCompatActivity{
     boolean[] selectedChk = null; //팝업메뉴 체크 여부 확인
     String[] popupItemTitle = null;
 
+    SeekBar radius;
+    TextView radiusTxt;
+
 
     private Context mContext; //현재  context
 
     //database
-
-    DBAccess dbAccess;
 
     private static MediaPlayer mp;
 
@@ -74,7 +77,9 @@ public class listpage extends AppCompatActivity{
 
     EditText searchText;
     Button searchBtn; //검색 버튼
-    Button popupBtn;
+    Button popupBtn;// 팝업메뉴 버튼
+    Button mapSearch;//맵 확인 버튼
+    int APIposition;
     TourAPI api; //API에 접근
     GPSInfo gps;
     private CustomProgressDialog customProgressDialog;
@@ -82,7 +87,10 @@ public class listpage extends AppCompatActivity{
     boolean lastPageChk = true;
 
     static String langBtn; //언어 구분 변수
+    static int radiusAPI; //반경 정하기
 
+
+    BackPressCloseHandler backPressCloseHandler; //뒤로가기 두 번 클릭 시 종료
     //Speak out...
 
     @Override
@@ -92,10 +100,17 @@ public class listpage extends AppCompatActivity{
 
         //Toolbar toolbar = (Toolbar)findViewById(R.id._toolbar); // 툴바 생성
         //setSupportActionBar(toolbar); // 액션바를 툴바로 대체
+        backPressCloseHandler = new BackPressCloseHandler(this);
 
+        radiusAPI = 0;
         mContext = getApplicationContext();
         intent = getIntent();
         langBtn = intent.getExtras().getString("langBtn");
+        radiusAPI = intent.getIntExtra("radiusAPI", -1);
+        Log.d("adf", ""+radiusAPI);
+        if (radiusAPI == -1) {
+            radiusAPI = 4000;
+        }
         if(langBtn.equals("Kor"))
             selectedNum = new int[]{12, 14, 15, 25, 28, 32, 38, 39};
         else
@@ -160,14 +175,29 @@ public class listpage extends AppCompatActivity{
                     "ショッピング",
                     "グルメ"};
 
-        dbAccess = new DBAccess(mContext);
+        radius = (SeekBar)findViewById(R.id.radius);
+        radiusTxt = (TextView)findViewById(R.id.radiusTxt);
+        radius.setProgress(radiusAPI/2000);
+        radiusTxt.setText(radiusAPI/2000+"km");
 
-        try {
-            dbAccess.createDataBase();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        dbAccess.openDataBase();
+        radius.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+                    radiusTxt.setText(progress + "km");
+                    radiusAPI = progress*1000;
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
 
         popupBtn = (Button)findViewById(R.id.popupBtn);
 
@@ -315,6 +345,8 @@ public class listpage extends AppCompatActivity{
         //ViewPager에 Adapter 설정
         pager.setAdapter(adapter);
 
+
+        APIposition = 0;
         pager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) { //스크롤 할 때 실행되는 명령
@@ -323,6 +355,7 @@ public class listpage extends AppCompatActivity{
             @Override
             public void onPageSelected(int position) { //페이지가 넘어갔을 때 실행되는 명령
 
+                APIposition = position;
                 Log.d("onPageSelected", position +"");
                 if (soundOnOff) {
                     soundOnOff = false;
@@ -344,14 +377,12 @@ public class listpage extends AppCompatActivity{
                         @Override
                         public void run() {
                             for (int i = 0; i < 8; i++) {
-                                api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, selectedNum[i], APIPage, 2); //접속 실행 위도 : y, 경도 : x
+                                api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), radiusAPI, selectedNum[i], 2, APIPage); //접속 실행 위도 : y, 경도 : x
                             }
                             //api.locationBasedList("127.05686", "37.648208", 5000,12, 10, 1); //접속 실행 위도 : y, 경도 : x
                             Log.d("locationBase", Double.toString(gps.getLongitude()) + " " + Double.toString(gps.getLatitude()));
                             //api.locationBasedList();
-                            //api.SystemOutPrintTour(); // 접속 후 받은 내용 프린트
                             adapter.addItem(api.GetTour());
-                            //progressDialog.dismiss(); //프로그레스 없애기
                             customProgressDialog.dismiss();
                             APIPage++;
 
@@ -376,27 +407,59 @@ public class listpage extends AppCompatActivity{
         searchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                gps = new GPSInfo(listpage.this);
+                final String searchTxt = searchText.getText().toString();
                 selectedChk = new boolean[]{touristchk, culturechk, festivalchk, transporchk, reportschk, motelchk, shoppingchk, diningchk};
-                api = new TourAPI(langBtn, "searchKeyword");
+                if(searchTxt.equals("")) {
+                    api = new TourAPI(langBtn, "locationBasedList");
+                    Log.d("TourAPI", "초기화 확인했음" + " " + Double.toString(gps.getLongitude())+ " " + Double.toString(gps.getLatitude()));
+                }
+                else
+                    api = new TourAPI(langBtn, "searchKeyword");
                 final Thread thread = new Thread() {
                     @Override
                     public void run() {
+
                             for (int i = 0; i < 8; i++) {
                                 if (selectedChk[i]) {
-                                    api.searchKeyword(searchText.getText().toString(), selectedNum[i], 3, 1);
+                                    if(searchTxt.equals(""))
+                                        api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), radiusAPI, selectedNum[i], 2, 1); //접속 실행 위도 : y, 경도 : x
+                                    else
+                                    api.searchKeyword(searchTxt, selectedNum[i], 3, 1);
+
                                     Log.d("selectedChk", selectedNum[i] + "");
                                 }
                             }//for
                             tour_list=api.GetTour();
                             intent = new Intent(getApplicationContext(), listpage.class);      // 정보가 이동될 액티비티를 지정한다.
                             intent.putExtra("langBtn", langBtn);                                        // DBnum이라는 변수에 DBnum == 1 넣어 intent에 데이터를 추가하여 넘기게 된다.
+                            intent.putExtra("radiusAPI", radiusAPI);
                             startActivity(intent);                                                    // 액티비티의 전환.(위에서 적어준 데이터들도 함깨 이동 된다.
+                            finish();
 
                     }//run
                 };//Thread
                 thread.start();
             }//onclick
         });//setOnclickListener
+
+
+        mapSearch = (Button)findViewById(R.id.mapSearch);
+        mapSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                intent  = new Intent(mContext, selectlist.class);      // 정보가 이동될 액티비티를 지정한다.
+                Double getMapY = tour_list.get(APIposition).getMapY();
+                Double getMapX = tour_list.get(APIposition).getMapX();
+                intent.putExtra("getMapY", getMapY);
+                intent.putExtra("getMapX", getMapX);
+                intent.putExtra("radiusAPI", radiusAPI);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                mContext.startActivity(intent);                                                    // 액티비티의 전환
+
+            }
+        });
 
     }
     //사운드 구현부분 종료//
@@ -466,6 +529,9 @@ public class listpage extends AppCompatActivity{
     }
     //다이얼로그 부분 끝
 
-    //프로그래스 다이얼로그 부분
-
+    @Override
+    public void onBackPressed() {
+        //super.onBackPressed();
+        backPressCloseHandler.onBackPressed();
+    }
 }

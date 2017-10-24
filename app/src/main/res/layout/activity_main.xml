@@ -78,7 +78,6 @@
                     android:textSize="20dp"
                     android:text="Team chonriahn"
                     android:textStyle="bold"
-                    android:onClick="checkLanguage"
                     android:background="#ffeec4"
                     />
 
@@ -176,7 +175,6 @@
                     android:text="ToUrSeoul app"
                     android:textSize="20dp"
                     android:textStyle="bold"
-                    android:onClick="checkLanguage"
                     android:background="#ffb2b2"
                     />
             </LinearLayout>

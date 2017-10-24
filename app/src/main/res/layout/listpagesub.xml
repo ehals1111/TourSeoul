@@ -24,12 +24,6 @@
                 app:srcCompat="@drawable/c00101"
                 android:scrollbars="none"
                 />
-                <Button
-                    android:id="@+id/mapSearch"
-                    android:layout_gravity="top|right"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
-                    android:background="@drawable/mapicon"/>
             </FrameLayout>
             <LinearLayout
                 android:layout_width="match_parent"

@@ -36,7 +36,6 @@ public class viewPagerAdapter extends PagerAdapter implements TextToSpeech.OnIni
     String contentsRP;
     WebView image;
     Button soundBtn;
-    Button mapSearch;
 
     Intent intent;
 
@@ -82,7 +81,6 @@ public class viewPagerAdapter extends PagerAdapter implements TextToSpeech.OnIni
         name= (TextView)view.findViewById(R.id.name);
         contents = (TextView)view.findViewById(R.id.contents);
         soundBtn = (Button)view.findViewById(R.id.soundBtn);
-        mapSearch = (Button)view.findViewById(R.id.mapSearch);
 
 
 
@@ -141,18 +139,6 @@ public class viewPagerAdapter extends PagerAdapter implements TextToSpeech.OnIni
                 }
             });
 
-            mapSearch.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    intent  = new Intent(context, selectlist.class);      // 정보가 이동될 액티비티를 지정한다.
-                    Double getMapY = tour_list.get(position).getMapY();
-                    Double getMapX = tour_list.get(position).getMapX();
-                    intent.putExtra("getMapY", getMapY);
-                    intent.putExtra("getMapX", getMapX);
-                    context.startActivity(intent);                                                    // 액티비티의 전환
-
-                }
-            });
 
 
         ((ViewPager)pager).addView(view);

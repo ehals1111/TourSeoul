@@ -21,10 +21,15 @@ import android.widget.Toast;
 
 public class StartPage extends AppCompatActivity {
     Intent intent;
+    private DBHelper dbHelper;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.startpage);
+
+        dbHelper = new DBHelper(StartPage.this, "ToUrSeoul",null, 1);
+        dbHelper.testBD();
+
 
         Handler handler=new Handler();
         handler.postDelayed(new Runnable() {

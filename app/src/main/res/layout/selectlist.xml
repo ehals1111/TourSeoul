@@ -5,7 +5,22 @@
     <android.support.v7.widget.Toolbar
         android:layout_width="match_parent"
         android:background="@color/colorAccent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content" >
+        <Button
+            android:id="@+id/carBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CAR"
+            android:onClick="onClickedBtn"
+            />
+        <Button
+            android:id="@+id/walkBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="WALK"
+            android:onClick="onClickedBtn"
+            />
+    </android.support.v7.widget.Toolbar>
 
     <LinearLayout
         android:layout_width="match_parent"

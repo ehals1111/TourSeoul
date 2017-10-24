@@ -15,6 +15,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -32,6 +34,9 @@ import com.skp.Tmap.TMapPolyLine;
 import com.skp.Tmap.TMapView;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import static com.example.web.tourseoul.listpage.radiusAPI;
 
 /**
  * Created by WEB on 2017-09-18.
@@ -48,7 +53,18 @@ public class selectlist extends AppCompatActivity {   //뷰를 보유하고 있�
     private ArrayList<LatLng> arrayPoints;
     private ArrayList<TMapPoint> point;
     Context context;
+    Button carBtn;
+    Button walkBtn;
 
+    TMapView tMapView;
+    TMapData tMapData;
+    TMapPoint startPnt;
+    TMapPoint endPnt;
+    AlertDialog.Builder gsDialog;
+
+    Location startLocation;
+    TMapPoint tmapPoint;
+    CircleOptions circleOptions;
 
     SupportMapFragment mapFragment; //프래그먼트는 특수현태의 뷰로 안드로이드에서 지원하는 외부 어플(구글맵)의 값을 넣기 위한 뷰타입임 import com.google.android.gms.maps.SupportMapFragment;
     GoogleMap map;   //외부 프로그램인 구글맵을 메모리 할당 import com.google.android.gms.maps.GoogleMap 메니페스트에 퍼미션 필요
@@ -61,31 +77,28 @@ public class selectlist extends AppCompatActivity {   //뷰를 보유하고 있�
         intent = getIntent();
         getMapY = intent.getDoubleExtra("getMapY", -1);
         getMapX = intent.getDoubleExtra("getMapX", -1);
-        Log.d(TAG + "1", getMapX + " " + getMapY);
+        radiusAPI = intent.getIntExtra("radiusAPI", -1);
+        Log.d(TAG + "1", getMapX + " " + getMapY +" " + radiusAPI);
         context = getApplicationContext();
         arrayPoints = new ArrayList<LatLng>();
+        carBtn = (Button)findViewById(R.id.carBtn);
+        walkBtn = (Button)findViewById(R.id.walkBtn);
+
+        carBtn.setTag("car");
+        walkBtn.setTag("walk");
 
 
-        final Location startLocation = startLocationService(); //startLocation에 현재 위치 때려박기
-        final TMapPoint tmapPoint = new TMapPoint(startLocation.getLatitude(),startLocation.getLongitude());
+        startLocation = startLocationService(); //startLocation에 현재 위치 때려박기
+
+        tmapPoint = new TMapPoint(startLocation.getLatitude(),startLocation.getLongitude());
         arrayPoints.add(new LatLng(startLocation.getLatitude(), startLocation.getLongitude()));
 
-        AlertDialog.Builder gsDialog = new AlertDialog.Builder(this);
-        gsDialog.setTitle("위치 서비스 설정");
-        gsDialog.setMessage("무선 네트워크 사용, GPS 위성 사용을 모두 체크하셔야 정확한 위치 서비스가 가능합니다.\n위치 서비스 기능을 설정하시겠습니까?");
-        gsDialog.setPositiveButton("네", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                arrayPoints.add(new LatLng(getMapY, getMapX));
-                polylineOptions.addAll(arrayPoints);
-                map.addPolyline(polylineOptions);
+        tMapView = new TMapView(context);
+        tMapView.setSKPMapApiKey("23e145ef-9527-3e44-b0d8-f6d881d1a848");
+        tMapData = new TMapData();
+        startPnt= new TMapPoint(startLocation.getLatitude(),startLocation.getLongitude());
+        endPnt= new TMapPoint(getMapY,getMapX);
 
-            }
-        }).setNegativeButton("아니요", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                Toast.makeText(getApplicationContext(), "Gps를 사용을 안 하시면 이용에 제한이 있습니다.", Toast.LENGTH_LONG).show();
-                return;
-            }
-        }).create().show();
 
         mapFragment=(SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);   //프래그먼트 온크리에이트 내에 메모리 할당
         mapFragment.getMapAsync(new OnMapReadyCallback() {   //맵을 사용하기 위해 단말기와 싱크로를 맞춤
@@ -95,44 +108,14 @@ public class selectlist extends AppCompatActivity {   //뷰를 보유하고 있�
                 map=googleMap;            //구글맵을 onMapReady(GoogleMap googleMap) 안에 있는 맵에 할당
                 map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(startLocation.getLatitude(),startLocation.getLongitude()), 17
                 )); // 시작 위치 찍어주기
-                MarkerOptions startMarker = new MarkerOptions().position(new LatLng(startLocation.getLatitude(), startLocation.getLongitude())).title("현재 위치");
-                MarkerOptions endMarker = new MarkerOptions().position(new LatLng(getMapY, getMapX)).title("목적지");
-                map.addMarker(startMarker).isInfoWindowShown();
-                map.addMarker(endMarker).showInfoWindow();
 
                 polylineOptions = new PolylineOptions();
                 polylineOptions.color(Color.RED);
                 polylineOptions.width(5);
 
-                TMapView tMapView = new TMapView(context);
-                tMapView.setSKPMapApiKey("23e145ef-9527-3e44-b0d8-f6d881d1a848");
-                TMapData tMapData = new TMapData();
-                TMapPoint startPnt= new TMapPoint(startLocation.getLatitude(),startLocation.getLongitude());
-                TMapPoint endPnt= new TMapPoint(getMapY,getMapX);
-                tMapData.findPathData(startPnt, endPnt, new TMapData.FindPathDataListenerCallback() {
-                    @Override
-                    public void onFindPathData(TMapPolyLine tMapPolyLine) {
 
-                        point = tMapPolyLine.getLinePoint();
-                        Log.d("point", point.size()+"");
-
-                        for(int i = 0; i < point.size(); i++) {
-                            Log.d("point확인", point.get(i).getLatitude() + " " + point.get(i).getLongitude());
-                            arrayPoints.add(new LatLng(point.get(i).getLatitude(), point.get(i).getLongitude()));
-                            Log.d("arrayFor", arrayPoints.size()+"");
-                        }
-
-                        Log.d("arrayResult", arrayPoints.size()+"");
-                        Log.d("polylineOptionsCall", ""+ polylineOptions.getPoints().size());
-
-                    }
-                });
-
-                Log.d("polylineOptionsOut", ""+ polylineOptions.getPoints().size());
-                polylineOptions.addAll(arrayPoints);
-
-                CircleOptions circleOptions = new CircleOptions().center(new LatLng(startLocation.getLatitude(), startLocation.getLongitude()))
-                        .radius(5000)
+                circleOptions = new CircleOptions().center(new LatLng(startLocation.getLatitude(), startLocation.getLongitude()))
+                        .radius(radiusAPI)
                         .strokeWidth(0f)
                         .fillColor(Color.parseColor("#220000ff"));
 
@@ -154,39 +137,23 @@ public class selectlist extends AppCompatActivity {   //뷰를 보유하고 있�
 
     }
 
-    private void TMapAPI(TMapPoint startLocation) {
+    private void startMapSetting(){
 
-        final TMapView tMapView = new TMapView(context);
-        tMapView.setSKPMapApiKey("23e145ef-9527-3e44-b0d8-f6d881d1a848");
-        TMapData tMapData = new TMapData();
-        TMapPoint startPnt= new TMapPoint(startLocation.getLatitude(),startLocation.getLongitude());
-        TMapPoint endPnt= new TMapPoint(getMapY,getMapX);
-        tMapData.findPathData(startPnt, endPnt, new TMapData.FindPathDataListenerCallback() {
-            @Override
-            public void onFindPathData(TMapPolyLine tMapPolyLine) {
+        MarkerOptions startMarker = new MarkerOptions().position(new LatLng(startLocation.getLatitude(), startLocation.getLongitude())).title("현재 위치");
+        MarkerOptions endMarker = new MarkerOptions().position(new LatLng(getMapY, getMapX)).title("목적지");
+        map.addMarker(endMarker).showInfoWindow();
+        map.addMarker(startMarker).isInfoWindowShown();
+        circleOptions = new CircleOptions().center(new LatLng(startLocation.getLatitude(), startLocation.getLongitude()))
+                .radius(radiusAPI)
+                .strokeWidth(0f)
+                .fillColor(Color.parseColor("#220000ff"));
+        map.addCircle(circleOptions);
 
-                point = tMapPolyLine.getLinePoint();
-                Log.d("point", point.size()+"");
-
-                for(int i = 0; i < point.size(); i++) {
-                    Log.d("point확인", point.get(i).getLatitude() + " " + point.get(i).getLongitude());
-                    arrayPoints.add(new LatLng(point.get(i).getLatitude(), point.get(i).getLongitude()));
-                    Log.d("arrayFor", arrayPoints.size()+"");
-                }
-
-                Log.d("arrayResult", arrayPoints.size()+"");
-                Log.d("polylineOptionsCall", ""+ polylineOptions.getPoints().size());
-
-
-
-
-            }
-        });
     }
 
 
-
     private Location startLocationService() {   //위치기반 서비스 구현
+        /*
         long minT=5000;            //발동 조건1 최저 이동거리 5m
         float minD=0;            //발동 조건2 최저 방향 변화 0도
         GPSListener GL = new GPSListener();   //GPS값을 받아올 수 있는 변수 설정
@@ -203,11 +170,29 @@ public class selectlist extends AppCompatActivity {   //뷰를 보유하고 있�
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
             Toast.makeText(getApplicationContext(),"권한문제 발생",Toast.LENGTH_SHORT).show();
+            Log.d("requestLocation", "권한 문제 발생");
             return null;
         }
         Location location = manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);   //권한 오류가 없는 경우 위치를 할당(위에 선언한 메니저에 GPS프로바이더가 가져온 최후 위치를 셋팅)
-        Log.d(TAG + "2", location.getLongitude() + " " + location.getLatitude());
+        Log.d("requestLocation", "권한에는 문제없음");
         return location;
+    */
+
+        LocationManager mLocationManager = (LocationManager)getApplicationContext().getSystemService(LOCATION_SERVICE);
+        List<String> providers = mLocationManager.getProviders(true);
+        Location bestLocation = null;
+        for (String provider : providers) {
+            Location l = mLocationManager.getLastKnownLocation(provider);
+            if (l == null) {
+                continue;
+            }
+            if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
+                // Found best last known location: %s", l);
+                bestLocation = l;
+            }
+        }
+        return bestLocation;
+
     }
     private class GPSListener implements LocationListener{   //GPS리스너를 구현 리스너는 위치 리스너를 상속받아서 해당 좌표값을 표현하기 용의한 형태로 구현
         public  void  onLocationChanged(Location location){   //위치 변동시 값을 저장할 공간 마련
@@ -223,6 +208,8 @@ public class selectlist extends AppCompatActivity {   //뷰를 보유하고 있�
         @Override
         public void onProviderDisabled(String provider) {   //프로바이더의 사용이 불가능할 경우 사용될 프로그램 정의(퍼미션이 있어서 그냥 놔둠 아무것도 안함)
         }
+
+
     }
 
 /*
@@ -306,4 +293,64 @@ public class selectlist extends AppCompatActivity {   //뷰를 보유하고 있�
     }
     */
 
+    public void onClickedBtn(View view){
+
+
+        arrayPoints = new ArrayList<LatLng>();
+        polylineOptions = new PolylineOptions();
+        arrayPoints.add(new LatLng(startLocation.getLatitude(), startLocation.getLongitude()));
+        Log.d("arrayPoints", arrayPoints.size() +"");
+        point = new ArrayList<TMapPoint>();
+        gsDialog = new AlertDialog.Builder(this);
+        gsDialog.setTitle("위치 서비스 설정");
+        gsDialog.setMessage("경로는 완벽하지 않을 수 있습니다. 그래도 사용하시겠습니까?");
+        gsDialog.setPositiveButton("예", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                map.clear();
+                startMapSetting();
+                arrayPoints.add(new LatLng(getMapY, getMapX));
+                polylineOptions.addAll(arrayPoints);
+                map.addPolyline(polylineOptions);
+
+            }
+        }).setNegativeButton("아니요", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                return;
+            }
+        }).create().show();
+
+        String patten = (String) view.getTag();
+        Log.d("getTag", patten +"");
+        if(patten.equals("car")) {
+            tMapData.findPathDataWithType(TMapData.TMapPathType.CAR_PATH, startPnt, endPnt, new TMapData.FindPathDataListenerCallback() {
+                @Override
+                public void onFindPathData(TMapPolyLine tMapPolyLine) {
+
+                    point = tMapPolyLine.getLinePoint();
+                    Log.d("tMapPolyLine", tMapPolyLine.getLinePoint().size()+ "");
+                    for (int i = 0; i < point.size(); i++) {
+                        arrayPoints.add(new LatLng(point.get(i).getLatitude(), point.get(i).getLongitude()));
+                    }
+                }
+            });
+        }else if(patten.equals("walk")){
+            tMapData.findPathDataWithType(TMapData.TMapPathType.PEDESTRIAN_PATH, startPnt, endPnt, new TMapData.FindPathDataListenerCallback() {
+                @Override
+                public void onFindPathData(TMapPolyLine tMapPolyLine) {
+
+
+                    point = tMapPolyLine.getLinePoint();
+                    Log.d("tMapPolyLine", ""+point.size() +" " + tMapPolyLine.getLinePoint().size());
+                    for (int i = 0; i < point.size(); i++) {
+                        arrayPoints.add(new LatLng(point.get(i).getLatitude(), point.get(i).getLongitude()));
+                    }
+
+                }
+            });
+
+        }else{
+            //else if
+        }
+
+    }
 }
