@@ -80,7 +80,7 @@ public class listpage extends AppCompatActivity{
     Button popupBtn;// 팝업메뉴 버튼
     Button mapSearch;//맵 확인 버튼
     int APIposition;
-    TourAPI api; //API에 접근
+    TourApi api; //API에 접근
     GPSInfo gps;
     private CustomProgressDialog customProgressDialog;
     int APIPage = 2; //페이지 체크
@@ -101,6 +101,7 @@ public class listpage extends AppCompatActivity{
         //Toolbar toolbar = (Toolbar)findViewById(R.id._toolbar); // 툴바 생성
         //setSupportActionBar(toolbar); // 액션바를 툴바로 대체
         backPressCloseHandler = new BackPressCloseHandler(this);
+        gps = new GPSInfo(getApplicationContext());
 
         radiusAPI = 0;
         mContext = getApplicationContext();
@@ -111,10 +112,7 @@ public class listpage extends AppCompatActivity{
         if (radiusAPI == -1) {
             radiusAPI = 4000;
         }
-        if(langBtn.equals("Kor"))
             selectedNum = new int[]{12, 14, 15, 25, 28, 32, 38, 39};
-        else
-            selectedNum = new int[]{76, 78, 85, 77, 75, 80, 79, 82};
 
         if(langBtn.equals("Eng"))
             popupItemTitle = new String[]{"Tourlist Atractions", "Cultural Facilities", "Festivals/Events/Performances", "Transportation", "Leisure/Sports", "Accommodation", "Shopping", "Dining"};
@@ -372,17 +370,22 @@ public class listpage extends AppCompatActivity{
                     customProgressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
                     customProgressDialog.setCanceledOnTouchOutside(false);
                     customProgressDialog.show();
-                    api = new TourAPI(langBtn, "locationBasedList");
+                    api = new TourApi();
+                    api.SetLanguage(langBtn);
                     final Thread thread = new Thread() {
                         @Override
                         public void run() {
+                            selectedChk = new boolean[]{touristchk, culturechk, festivalchk, transporchk, reportschk, motelchk, shoppingchk, diningchk};
                             for (int i = 0; i < 8; i++) {
-                                api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), radiusAPI, selectedNum[i], 2, APIPage); //접속 실행 위도 : y, 경도 : x
+                                if (selectedChk[i]) {
+                                    api.XmlToData(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), radiusAPI, selectedNum[i], 2, APIPage); //접속 실행 위도 : y, 경도 : x
+                                }
                             }
-                            //api.locationBasedList("127.05686", "37.648208", 5000,12, 10, 1); //접속 실행 위도 : y, 경도 : x
                             Log.d("locationBase", Double.toString(gps.getLongitude()) + " " + Double.toString(gps.getLatitude()));
                             //api.locationBasedList();
                             adapter.addItem(api.GetTour());
+                            //adapter.notifyDataSetChanged();
+
                             customProgressDialog.dismiss();
                             APIPage++;
 
@@ -410,12 +413,9 @@ public class listpage extends AppCompatActivity{
                 gps = new GPSInfo(listpage.this);
                 final String searchTxt = searchText.getText().toString();
                 selectedChk = new boolean[]{touristchk, culturechk, festivalchk, transporchk, reportschk, motelchk, shoppingchk, diningchk};
-                if(searchTxt.equals("")) {
-                    api = new TourAPI(langBtn, "locationBasedList");
+                    api = new TourApi();
+                    api.SetLanguage(langBtn);
                     Log.d("TourAPI", "초기화 확인했음" + " " + Double.toString(gps.getLongitude())+ " " + Double.toString(gps.getLatitude()));
-                }
-                else
-                    api = new TourAPI(langBtn, "searchKeyword");
                 final Thread thread = new Thread() {
                     @Override
                     public void run() {
@@ -423,7 +423,7 @@ public class listpage extends AppCompatActivity{
                             for (int i = 0; i < 8; i++) {
                                 if (selectedChk[i]) {
                                     if(searchTxt.equals(""))
-                                        api.locationBasedList(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), radiusAPI, selectedNum[i], 2, 1); //접속 실행 위도 : y, 경도 : x
+                                        api.XmlToData(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), radiusAPI, selectedNum[i], 2, 1); //접속 실행 위도 : y, 경도 : x
                                     else
                                     api.searchKeyword(searchTxt, selectedNum[i], 3, 1);
 

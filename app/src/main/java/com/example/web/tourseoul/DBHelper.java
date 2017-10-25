@@ -19,11 +19,10 @@ public class DBHelper extends SQLiteOpenHelper {
         sb.append("Create table locationHistory(");
         sb.append("_ID INTEGER PRIMARY KEY AUTOINCREMENT, ");
         sb.append("latitude DOUBLE, ");
-        sb.append("longitude DOUBLE); ");
+        sb.append("longitude DOUBLE, ");
+        sb.append("date DATETIME); ");
 
         db.execSQL(sb.toString());
-
-
     }
 
     @Override
@@ -31,7 +30,8 @@ public class DBHelper extends SQLiteOpenHelper {
 
     }
 
-    public void testBD(){
+    public void insertData(){
         SQLiteDatabase db = getReadableDatabase();
+
     }
 }

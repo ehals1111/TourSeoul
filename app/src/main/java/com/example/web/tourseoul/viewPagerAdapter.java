@@ -106,25 +106,27 @@ public class viewPagerAdapter extends PagerAdapter implements TextToSpeech.OnIni
             image.getSettings().setLoadWithOverviewMode(true);
 
             webSettings.setUseWideViewPort(true); //웹뷰 와이드하게 보이도록 하기
-        /*
             contentsRP = tour_list.get(position).getContent();
+        try {
             contentsRP = contentsRP.replaceAll("<br>", "\n");
             contentsRP = contentsRP.replaceAll("<br />", "\n");
             contentsRP = contentsRP.replaceAll("&nbsp;", " ");
             contentsRP = contentsRP.replaceAll("<br/>", "\n");
             contentsRP = contentsRP.replaceAll("&lsquo;", "'");
             contentsRP = contentsRP.replaceAll("&rsquo;", "'");
-*/
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
         //api.locationBasedList("126.981611", "37.568477", 500, 15, 10, 1); //(경도, 위도, 거리, 분류, 가져올 개수, 페이지 넘버)
             name.setText(tour_list.get(position).getTitle());
-            //contents.setText(contentsRP);
+            contents.setText(contentsRP);
             speech = new TextToSpeech(context, this);
             soundBtn.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
                     if (soundOnOff){
                         soundOnOff = false;
-                        v.setBackgroundResource(R.drawable.soundb);
+                        v.setBackgroundResource(R.drawable.soundoff);
                         speech.stop();
 
                         Log.d("버튼 로그", "버튼 :" + soundOnOff+ "\nposition : " );
@@ -132,7 +134,7 @@ public class viewPagerAdapter extends PagerAdapter implements TextToSpeech.OnIni
                     }else {
                         soundOnOff = true;
                         Log.d("버튼 로그", "버튼 :" + soundOnOff+ "\nposition : " );
-                        v.setBackgroundResource(R.drawable.sounda);
+                        v.setBackgroundResource(R.drawable.soundon);
                         speakOutNow(contentsRP);
                     }
 

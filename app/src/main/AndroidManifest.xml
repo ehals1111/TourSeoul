@@ -49,6 +49,7 @@
         <activity android:name=".MainActivity"></activity>
         <activity android:name=".listpage"></activity>
         <activity android:name=".selectlist"></activity>
+        <service android:name=".DataService"></service>
     </application>
 
 <!--

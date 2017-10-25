@@ -2,62 +2,69 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/wallet_highlighted_text_holo_light"
+    android:background="#ffffff"
     android:weightSum="1">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/:toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:background="#ffffff">
-
-        <LinearLayout
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/:toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:focusable="true"
-            android:focusableInTouchMode="true">
-            <EditText
-                android:id="@+id/searchText"
-                android:hint="search all"
+            android:layout_height="60dp"
+            android:weightSum="1"
+            android:background="@drawable/back"
+            >
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                />
-            <Button
-                android:id="@+id/searchBtn"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:background="@drawable/search"
-                />
-            <Button
-                android:id="@+id/popupBtn"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="@drawable/setting1"
-                android:onClick="mOnClick"
-                android:layout_marginRight="5dp"
-                />
-        </LinearLayout>
+                android:orientation="horizontal"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
 
-    </android.support.v7.widget.Toolbar>
+                android:layout_weight="4.44">
+                <EditText
+                    android:id="@+id/searchText"
+                    android:hint="search all"
+                    android:background="@null"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    />
+                <Button
+                    android:id="@+id/searchBtn"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:background="@drawable/search"
+                    android:layout_marginRight="5dp"
+                    />
+                <Button
+                    android:id="@+id/popupBtn"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/setting1"
+                    android:onClick="mOnClick"
+                    android:layout_marginRight="5dp"
+                    />
+            </LinearLayout>
+
+        </android.support.v7.widget.Toolbar>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
-        <SeekBar
-            android:id="@+id/radius"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:max="25"
-            android:progress="2"
-            android:layout_weight="1"
-            />
+            <SeekBar
+                android:id="@+id/radius"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="25"
+                android:progress="2"
+                android:layout_weight="1"
+                android:visibility="invisible"
+                />
             <TextView
                 android:id="@+id/radiusTxt"
                 android:layout_width="wrap_content"
@@ -69,19 +76,20 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-    <android.support.v4.view.ViewPager
-        android:id="@+id/listView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="0.16">
+            <android.support.v4.view.ViewPager
+                android:id="@+id/listView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.16">
 
 
-    </android.support.v4.view.ViewPager>
+            </android.support.v4.view.ViewPager>
             <Button
                 android:id="@+id/mapSearch"
                 android:layout_gravity="top|right"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="10dp"
                 android:background="@drawable/mapicon"/>
         </FrameLayout>
     </LinearLayout>

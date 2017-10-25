@@ -28,7 +28,8 @@ public class StartPage extends AppCompatActivity {
         setContentView(R.layout.startpage);
 
         dbHelper = new DBHelper(StartPage.this, "ToUrSeoul",null, 1);
-        dbHelper.testBD();
+        startService(new Intent(StartPage.this, DataService.class));
+
 
 
         Handler handler=new Handler();
@@ -41,4 +42,5 @@ public class StartPage extends AppCompatActivity {
             }
         },3000);
     }
+
 }
