@@ -24,8 +24,10 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.skp.Tmap.TMapData;
@@ -44,7 +46,7 @@ import static com.example.web.tourseoul.listpage.radiusAPI;
 
 // 지형 및 좌표?
 
-public class selectlist extends AppCompatActivity {   //뷰를 보유하고 있기 때문에 뷰 표현에 필요한 AppCompatActivity를 상속받음
+public class selectlist extends AppCompatActivity{   //뷰를 보유하고 있기 때문에 뷰 표현에 필요한 AppCompatActivity를 상속받음
     private static final String TAG="selectlist";   //로그를 찍기 위한태그 의미없음
     Intent intent;
     Double getMapY;
@@ -55,12 +57,18 @@ public class selectlist extends AppCompatActivity {   //뷰를 보유하고 있�
     Context context;
     Button carBtn;
     Button walkBtn;
+    Button myLocationBtn;
+    Button reload;
+    Button achiv;
+    boolean mapIconChk; //맵에 있는 아이콘 보여주기 여부
 
     TMapView tMapView;
     TMapData tMapData;
     TMapPoint startPnt;
     TMapPoint endPnt;
     AlertDialog.Builder gsDialog;
+
+    DBHelper dbHelper;
 
     Location startLocation;
     TMapPoint tmapPoint;
@@ -69,23 +77,35 @@ public class selectlist extends AppCompatActivity {   //뷰를 보유하고 있�
     SupportMapFragment mapFragment; //프래그먼트는 특수현태의 뷰로 안드로이드에서 지원하는 외부 어플(구글맵)의 값을 넣기 위한 뷰타입임 import com.google.android.gms.maps.SupportMapFragment;
     GoogleMap map;   //외부 프로그램인 구글맵을 메모리 할당 import com.google.android.gms.maps.GoogleMap 메니페스트에 퍼미션 필요
 
+
+    ArrayList<TourData> tour_list = new ArrayList<TourData>(); //API를 통해 받아온 리스트를 저장
+
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {   //뷰를 가지는 모든 자바파일은 해당 크리에이트를 보유해야 함
         super.onCreate(savedInstanceState);   //무슨 기능을 가지는지 모르므로 상속받은 전부를 불러옴
         setContentView(R.layout.selectlist);   //뷰의 형태를 가지는  xml을 로드해옴
 
+        mapIconChk = true;
         intent = getIntent();
         getMapY = intent.getDoubleExtra("getMapY", -1);
         getMapX = intent.getDoubleExtra("getMapX", -1);
         radiusAPI = intent.getIntExtra("radiusAPI", -1);
+        tour_list = (ArrayList<TourData>)intent.getSerializableExtra("tour_list");
+        Log.d("로그띠", tour_list.size() +"");
+
         Log.d(TAG + "1", getMapX + " " + getMapY +" " + radiusAPI);
         context = getApplicationContext();
         arrayPoints = new ArrayList<LatLng>();
         carBtn = (Button)findViewById(R.id.carBtn);
         walkBtn = (Button)findViewById(R.id.walkBtn);
+        myLocationBtn = (Button)findViewById(R.id.myLocation);
 
         carBtn.setTag("car");
         walkBtn.setTag("walk");
+
+        dbHelper = new DBHelper(getApplicationContext(), "ToUrSeoul",null, 1);
+
 
 
         startLocation = startLocationService(); //startLocation에 현재 위치 때려박기
@@ -109,17 +129,26 @@ public class selectlist extends AppCompatActivity {   //뷰를 보유하고 있�
                 map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(startLocation.getLatitude(),startLocation.getLongitude()), 17
                 )); // 시작 위치 찍어주기
 
-                polylineOptions = new PolylineOptions();
-                polylineOptions.color(Color.RED);
-                polylineOptions.width(5);
+                startMapSetting();
+                mapIconSetting();
+                map.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+                    @Override
+                    public void onInfoWindowClick(Marker marker) {
+                        gsDialog = new AlertDialog.Builder(getApplicationContext());
+                        gsDialog.setTitle("");
+                        gsDialog.setMessage("이 관광지의 정보를 확인하시겠습니까? ");
+                        gsDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
 
+                            }
+                        }).setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                return;
+                            }
+                        }).create().show();
 
-                circleOptions = new CircleOptions().center(new LatLng(startLocation.getLatitude(), startLocation.getLongitude()))
-                        .radius(radiusAPI)
-                        .strokeWidth(0f)
-                        .fillColor(Color.parseColor("#220000ff"));
-
-                map.addCircle(circleOptions);
+                    }
+                });
 
 
 
@@ -133,12 +162,63 @@ public class selectlist extends AppCompatActivity {   //뷰를 보유하고 있�
         }
 
 
-        //requestMyLocation();
+        //mylocation 나의 이동 경로
+
+        myLocationBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("myLocation", "myLocation start");
+                map.clear();
+                arrayPoints = new ArrayList<LatLng>();
+                arrayPoints = dbHelper.selectList();
+                MarkerOptions startMarker = new MarkerOptions().position(new LatLng(arrayPoints.get(0).latitude, arrayPoints.get(0).longitude)).title("start");
+                MarkerOptions endMarker = new MarkerOptions().position(new LatLng(arrayPoints.get(arrayPoints.size()-1).latitude, arrayPoints.get(arrayPoints.size()-1).longitude)).title("end");
+                map.addMarker(endMarker).showInfoWindow();
+                map.addMarker(startMarker).isInfoWindowShown();
+                polylineOptions = new PolylineOptions();
+                polylineOptions.addAll(arrayPoints);
+                map.addPolyline(polylineOptions);
+
+            }
+        });
+
+        achiv = (Button)findViewById(R.id.achievment);
+        achiv.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                intent = new Intent(getApplicationContext(), AchievementList.class);      // 정보가 이동될 액티비티를 지정한다.
+                startActivity(intent);                                                    // 액티비티의 전환.(위에서 적어준 데이터들도 함깨 이동 된다.
+
+            }
+        });
+
+
+        reload = (Button)findViewById(R.id.reload);
+        reload.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                if (mapIconChk) {
+                    map.clear();
+                    startMapSetting();
+                    mapIconChk=!mapIconChk;
+                } else {
+                    map.clear();
+                    startMapSetting();
+                    mapIconSetting();
+                    mapIconChk=!mapIconChk;
+                }
+
+            }
+        });
+
 
     }
 
     private void startMapSetting(){
 
+        polylineOptions = new PolylineOptions();
+        polylineOptions.color(Color.RED);
+        polylineOptions.width(5);
         MarkerOptions startMarker = new MarkerOptions().position(new LatLng(startLocation.getLatitude(), startLocation.getLongitude())).title("현재 위치");
         MarkerOptions endMarker = new MarkerOptions().position(new LatLng(getMapY, getMapX)).title("목적지");
         map.addMarker(endMarker).showInfoWindow();
@@ -148,6 +228,56 @@ public class selectlist extends AppCompatActivity {   //뷰를 보유하고 있�
                 .strokeWidth(0f)
                 .fillColor(Color.parseColor("#220000ff"));
         map.addCircle(circleOptions);
+
+    }
+
+    private void mapIconSetting() {
+        for(int i = 0; i < tour_list.size(); i++) {
+            if(getMapX != tour_list.get(i).getMapX() || getMapY != tour_list.get(i).getMapY()) {
+                MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(tour_list.get(i).getMapY(), tour_list.get(i).getMapX())).title(tour_list.get(i).title);
+                Log.d("af", tour_list.get(i).content_type + "");
+                switch (tour_list.get(i).content_type){
+                    case 12:
+                    case 76:
+                        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.atrac));
+                        break;
+                    case 14:
+                    case 78:
+                        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.instal));
+                        break;
+                    case 15:
+                    case 85:
+                        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.festi));
+                        break;
+                    case 25:
+                    case 77:
+                        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.tour));
+                        break;
+                    case 28:
+                    case 75:
+                        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.leport));
+                        break;
+                    case 32:
+                    case 80:
+                        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.sleep));
+                        break;
+                    case 38:
+                    case 79:
+                        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.shop));
+                        break;
+                    case 39:
+                    case 82:
+                        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.dining));
+                }
+                map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                    @Override
+                    public boolean onMarkerClick(Marker marker) {
+                        return false;
+                    }
+                });
+                map.addMarker(markerOptions);
+            }
+        }
 
     }
 
@@ -194,6 +324,7 @@ public class selectlist extends AppCompatActivity {   //뷰를 보유하고 있�
         return bestLocation;
 
     }
+
     private class GPSListener implements LocationListener{   //GPS리스너를 구현 리스너는 위치 리스너를 상속받아서 해당 좌표값을 표현하기 용의한 형태로 구현
         public  void  onLocationChanged(Location location){   //위치 변동시 값을 저장할 공간 마련
             Double latitude=location.getLatitude();         //경도 변경 저장 부분
@@ -212,87 +343,6 @@ public class selectlist extends AppCompatActivity {   //뷰를 보유하고 있�
 
     }
 
-/*
-    private void requestMyLocation() {   //현재위치를 저장할 프로그램 구현
-        LocationManager manager =
-                (LocationManager) getSystemService(Context.LOCATION_SERVICE);   //위에서 구현한 위치 메니져
-
-        try {
-            long minTime = 10000;   //현재위치 변동에 필요한 최소 시간을 규정 10분
-            float minDistance = 0;   //현재 위치 변동에 필요한 최소 거리를 규정 0나노m
-            manager.requestLocationUpdates(   //현재위치 변동에 필요한 조건을 메니저에 셋팅
-                    LocationManager.GPS_PROVIDER,   //위치메니져의 형태
-                    minTime,            //조건1
-                    minDistance,         //조건2
-                    new LocationListener() {      //적용할 리스너를 구현(매개변수 내에서 구현)
-                        @Override
-                        public void onLocationChanged(Location location) {   //조건에 맞는 위치 변동시 위치를 보여주는 기능
-                            showCurrentLocation(location);
-                        }
-
-                        @Override
-                        public void onStatusChanged(String provider, int status, Bundle extras) {   //프로바이더의 상태변화 상기 변화와 상동
-
-                        }
-
-                        @Override
-                        public void onProviderEnabled(String provider) {      //프로바이더의 가능여부에 따른 변화와 상동
-
-                        }
-
-                        @Override
-                        public void onProviderDisabled(String provider) {      //프로바이더의 불가능여부에 따른 변화와 상동
-
-                        }
-                    }
-            );
-            Location lastLocation = manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);   //최종 위치를 저장할 공간을 마련(GPS프로바이더로부터 받아온 값을 위치 메니저에 할당하여 좌표값으로 환산 후 이를 로케이션 형태의 더블타입으로 저장)
-            if (lastLocation != null) {
-                showCurrentLocation(lastLocation);   //현재 위치를 보여줌 더블타입으로 치환 이래야지만 latlng타입으로 불러올 수 있음
-            }
-
-            manager.requestLocationUpdates(         //상기 업데이트 구문과 상동
-                    LocationManager.NETWORK_PROVIDER,
-                    minTime,
-                    minDistance,
-                    new LocationListener() {
-                        @Override
-                        public void onLocationChanged(Location location) {
-                            showCurrentLocation(location);
-                        }
-
-                        @Override
-                        public void onStatusChanged(String provider, int status, Bundle extras) {
-
-                        }
-
-                        @Override
-                        public void onProviderEnabled(String provider) {
-
-                        }
-
-                        @Override
-                        public void onProviderDisabled(String provider) {
-
-                        }
-                    }
-            );
-
-
-        } catch(SecurityException e) {
-            e.printStackTrace();
-        }
-    }
-    */
-
-/*
-    private void showCurrentLocation(Location location) {   //받아온 로케이션 타입을 분할하여 표현하기 위한 부분
-        LatLng curPoint = new LatLng(location.getLatitude(), location.getLongitude());   //latlng타입(double. double)현태로 구성되어 있는데 이를 get으로 잘라서 받아오기 위한 부분
-        //카메라 이동을 통한 애니메이션을 줌업현태로 표현하겠다는 뜻
-        map.animateCamera(CameraUpdateFactory.newLatLngZoom(curPoint, 15));   //구글맵을 할당한 맵 메모리에 애니메이션 효과를 줌, 매개변수 1은 이동할 좌표를 나타내고, 뒤에 int부분은 확대되는 정도를 의미
-    }
-    */
-
     public void onClickedBtn(View view){
 
 
@@ -302,18 +352,21 @@ public class selectlist extends AppCompatActivity {   //뷰를 보유하고 있�
         Log.d("arrayPoints", arrayPoints.size() +"");
         point = new ArrayList<TMapPoint>();
         gsDialog = new AlertDialog.Builder(this);
-        gsDialog.setTitle("위치 서비스 설정");
-        gsDialog.setMessage("경로는 완벽하지 않을 수 있습니다. 그래도 사용하시겠습니까?");
-        gsDialog.setPositiveButton("예", new DialogInterface.OnClickListener() {
+        gsDialog.setTitle("");
+        gsDialog.setMessage("Would you like to view the path");
+        gsDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 map.clear();
                 startMapSetting();
+                if (mapIconChk){
+                    mapIconSetting();
+                }
                 arrayPoints.add(new LatLng(getMapY, getMapX));
                 polylineOptions.addAll(arrayPoints);
                 map.addPolyline(polylineOptions);
 
             }
-        }).setNegativeButton("아니요", new DialogInterface.OnClickListener() {
+        }).setNegativeButton("NO", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 return;
             }
@@ -353,4 +406,6 @@ public class selectlist extends AppCompatActivity {   //뷰를 보유하고 있�
         }
 
     }
+
+
 }
