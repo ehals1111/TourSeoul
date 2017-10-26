@@ -32,14 +32,15 @@ public class TourApi {
 	public final static int 숙박 = 32;					// 80	
 	public final static int 쇼핑 = 38;					// 79
 	public final static int 음식점 = 39;					// 82	
-	public final static int 선택안함 = 0;
+	public final static int 전부선택 = 0;
+	//public final static int 선택안함 = -1;
 	
 	StringBuilder sb_url         = null; 		// 한글 기반 정보 결과를 받기 위하여 보내는 url
 	StringBuilder sb_urlLanguage = null; 		// 타국어 기반 결과를 받기 위하여 보내는 url
 	StringBuilder sb_urlDetail   = null; 		// 설명 부분을 받기 위한 url
 	StringBuilder sb_urlSearch   = null;
 		
-	String ServiceKey = "qk%2BGaqjIo5c4he7T4X4rz3wFRomQOavR7lfOUKTWAwQbWE4AMKZeNlXWTEF88gm85q0IBrCFdm74edYyMGORZQ%3D%3D"; 
+	String ServiceKey = "906Kf1GHKpgpJQ20CiiAk4xOcAUGjUIYPMcRP3QWarzTfgGXfwjEKmRx5s3Vpo4ssBOujxBZa30SG879WOd7Pg%3D%3D"; 
 	//"906Kf1GHKpgpJQ20CiiAk4xOcAUGjUIYPMcRP3QWarzTfgGXfwjEKmRx5s3Vpo4ssBOujxBZa30SG879WOd7Pg%3D%3D"; // m
 	//"qk%2BGaqjIo5c4he7T4X4rz3wFRomQOavR7lfOUKTWAwQbWE4AMKZeNlXWTEF88gm85q0IBrCFdm74edYyMGORZQ%3D%3D";	// p
 	String language  = "Kor";
@@ -61,6 +62,8 @@ public class TourApi {
 	Document detail_document = null;
 	
 	ArrayList<TourData> arraylist_tour = null;// new ArrayList<TourData>();
+	
+	boolean data_in = false;
 	
 	public TourApi(){
 		
@@ -182,6 +185,52 @@ public class TourApi {
 	    //}
 	    
 	}
+
+	// 현재 선택 언어가 "Kor"이 아니면, 다른 언어에 해당하는 type으로 바꾸어 리턴한다.
+	public int ContentTypeChange( int _kor_content_type )
+	{
+		int type = 0;
+		
+		if( !"Kor".equals( language ) )
+		{
+			switch( _kor_content_type )
+			{
+			case 관광지 :
+				type = 76;
+				break;
+			case 문화시설 :
+				type = 78;
+				break;
+			case 행사_공연_축제 :
+				type = 85;
+				break;
+			case 여행코스 :
+				type = 77;
+				break;
+			case 레포츠 :
+				type = 75;
+				break;
+			case 숙박 :
+				type = 80;
+				break;
+			case 쇼핑 :
+				type = 79;
+				break;
+			case 음식점 :
+				type = 82;
+				break;
+			case 전부선택 :	// all 체크
+				type =  0;
+				break;	
+//			case 체크안함 :
+//				break;					
+			}
+			
+			return type;
+		}
+		
+		return _kor_content_type;
+	}
 	
 	// 설명
 	public void detailCommonKor(int _contentId )
@@ -233,7 +282,7 @@ public class TourApi {
 		else
 			sb_urlDetail = new StringBuilder();
 		
-		System.out.println("datailCommon() 언어 : " + language);
+		System.out.println("detailCommonLanguage() 언어 : " + language);
 		
 		sb_urlDetail.append("http://api.visitkorea.or.kr/openapi/service/rest");
 		sb_urlDetail.append("/" + language + "Service");		
@@ -379,7 +428,7 @@ public class TourApi {
 		sb_urlSearch.append("&MobileApp=" + MobileApp);
 		if( _contentTypeId != 0 )
 		{
-			_contentTypeId = SetContentType( _contentTypeId );
+			_contentTypeId = ContentTypeChange( _contentTypeId );
 			sb_urlSearch.append("&contentTypeId=" + _contentTypeId);			// NO필수
 		}
 		
@@ -392,8 +441,6 @@ public class TourApi {
 			e.printStackTrace();
 		}
 		
-		boolean data_in = false;
-		
 		if( "Kor".equals(language) )
 		{
 			try{
@@ -404,7 +451,13 @@ public class TourApi {
 				e.printStackTrace();				
 			}
 			
-			data_in = SetTourData("Kor", "item" );
+			if( SetTourData("Kor", "item" ) )
+				data_in = true;
+			else
+				if( _page_n > 1 )
+					data_in = true;
+				else
+					data_in = false;			
 		}
 		else
 		{
@@ -416,56 +469,18 @@ public class TourApi {
 				e.printStackTrace();				
 			}
 			
-			data_in = SetTourData( language, "item" );
+			if( SetTourData( language, "item" ) )
+				data_in = true;
+			else
+				if( _page_n > 1 )
+					data_in = true;
+				else
+					data_in = false;
 		}
-/*
-		if( !data_in )
-			arraylist_tour.add( GetValueOfDefault() );
-			*/
-	}
-	
-	// 현재 선택 언어가 "Kor"이 아니면, 다른 언어에 해당하는 type으로 바꾸어 리턴한다.
-	public int SetContentType( int _content_type )
-	{
-		int type = 0;
 		
-		if( !"Kor".equals( language ) )
-		{
-			switch( _content_type )
-			{
-			case 관광지 :
-				type = 76;
-				break;
-			case 문화시설 :
-				type = 78;
-				break;
-			case 행사_공연_축제 :
-				type = 85;
-				break;
-			case 여행코스 :
-				type = 77;
-				break;
-			case 레포츠 :
-				type = 75;
-				break;
-			case 숙박 :
-				type = 80;
-				break;
-			case 쇼핑 :
-				type = 79;
-				break;
-			case 음식점 :
-				type = 82;
-				break;
-			case 선택안함 :
-				type =  0;
-				break;				
-			}
+//		if( !data_in )
+//			arraylist_tour.add( GetValueOfDefault() );
 			
-			return type;
-		}
-		
-		return _content_type;
 	}
 	
 	public void XmlToData( String _mapX, String _mapY, int _radius, int _contentTypeId, int _numOfRows, int _page_n )
@@ -487,7 +502,7 @@ public class TourApi {
 		if( !language.equals( "Kor") )
 		{
 			//System.out.println("content type 수정전 : " + _contentTypeId );
-			_contentTypeId = SetContentType( _contentTypeId );
+			_contentTypeId = ContentTypeChange( _contentTypeId );
 			//System.out.println("content type 수정후: " + _contentTypeId );
 			
 			locationBasedListLanguage( _mapX, _mapY, _radius, _contentTypeId, _numOfRows, _page_n );
@@ -505,12 +520,111 @@ public class TourApi {
 			}
 		}
 		
-		SetTourData("Kor", "item" );
+		if( SetTourData("Kor", "item" ) )
+			data_in = true;
+		else
+			if( _page_n > 1 )
+				data_in = true;
+			else
+				data_in = false;
 		
-		if( !language.equals( "Kor") )
+		if( !"Kor".equals(language) )
 		{		
-			SetTourData( language, "item" );
+			if( SetTourData( language, "item" ) )
+				data_in = true;
+			else
+				if( _page_n > 1 )
+					data_in = true;
+				else
+					data_in = false;
 		}
+	}
+	
+	public void SetTourOfValues( String _mapX, String _mapY, int _radius, int[] _content_type_s, int _numOfRows, int _page_n )
+	{
+		data_in = false;
+		
+		for( int i = 0 ; i < _content_type_s.length ; i++ )
+			switch( _content_type_s[i] )
+			{
+			case 관광지 :
+				XmlToData( _mapX, _mapY, _radius, 관광지, _numOfRows, _page_n );
+				break;
+			case 문화시설 :
+				XmlToData( _mapX, _mapY, _radius, 문화시설, _numOfRows, _page_n );
+				break;
+			case 행사_공연_축제 :
+				XmlToData( _mapX, _mapY, _radius, 행사_공연_축제, _numOfRows, _page_n );
+				break;
+			case 여행코스 :
+				XmlToData( _mapX, _mapY, _radius, 여행코스, _numOfRows, _page_n );
+				break;
+			case 레포츠 :
+				XmlToData( _mapX, _mapY, _radius, 레포츠, _numOfRows, _page_n );
+				break;
+			case 숙박 :
+				XmlToData( _mapX, _mapY, _radius, 숙박, _numOfRows, _page_n );
+				break;
+			case 쇼핑 :
+				XmlToData( _mapX, _mapY, _radius, 쇼핑, _numOfRows, _page_n );
+				break;
+			case 음식점 :
+				XmlToData( _mapX, _mapY, _radius, 음식점, _numOfRows, _page_n );
+				break;
+			case 전부선택 :	// all 체크
+				XmlToData( _mapX, _mapY, _radius, 전부선택, _numOfRows, _page_n );
+				break;	
+//				case 체크안함 :	// all 체크
+//					break;
+			default:
+				break;
+			}
+		
+		if( !data_in )
+			arraylist_tour.add( GetValueOfDefault() );
+	}
+	
+	public void SetTourOfValuesSearch( String _keyword, int[] _content_type_s, int _numOfRows, int _page_n )
+	{
+		data_in = false;
+		
+		for( int i = 0 ; i < _content_type_s.length ; i++ )
+			switch( _content_type_s[i] )
+			{
+			case 관광지 :
+				searchKeyword( _keyword, 관광지, _numOfRows, _page_n);
+				break;
+			case 문화시설 :
+				searchKeyword( _keyword, 문화시설, _numOfRows, _page_n );
+				break;
+			case 행사_공연_축제 :
+				searchKeyword( _keyword, 행사_공연_축제, _numOfRows, _page_n );
+				break;
+			case 여행코스 :
+				searchKeyword( _keyword, 여행코스, _numOfRows, _page_n );
+				break;
+			case 레포츠 :
+				searchKeyword( _keyword, 레포츠, _numOfRows, _page_n );
+				break;
+			case 숙박 :
+				searchKeyword( _keyword, 숙박, _numOfRows, _page_n );
+				break;
+			case 쇼핑 :
+				searchKeyword( _keyword, 쇼핑, _numOfRows, _page_n );
+				break;
+			case 음식점 :
+				searchKeyword( _keyword, 음식점, _numOfRows, _page_n );
+				break;
+			case 전부선택 :	// all 체크
+				searchKeyword( _keyword, 전부선택, _numOfRows, _page_n );
+				break;	
+//				case 체크안함 :	// all 체크
+//					break;					
+			}
+		/*
+		if( !data_in )
+		arraylist_tour.add( GetValueOfDefault() );
+		*/
 	}
 	
 	// 문서에서 테그에 접근.
@@ -552,7 +666,7 @@ public class TourApi {
 			//System.out.println("GetTag() language : 태그를 가져온다. : " + _tag_name);
 			if( isDetail )
 			{
-				System.out.println("GetTag() language - 태그를 가져온다. : " + _tag_name + " detail_document : " + detail_document);
+				//System.out.println("GetTag() language - 태그를 가져온다. : " + _tag_name + " detail_document : " + detail_document);
 				return detail_document.getElementsByTagName(_tag_name);
 			}
 			else			
@@ -624,6 +738,7 @@ public class TourApi {
 		//System.out.println( "get tag : " + nl );
 		System.out.println( "GetValueOfDetail() item_length : " + item_length );
 		//System.out.println( "_tag_name : " + _tag_name + "    length : " + item_length );
+		
 		for( int i = 0 ; i < item_length ; i++) 
 		{
 			String child_name = GetTag(true, _Document_type, _tag_name).item(_n).getChildNodes().item(i).getNodeName();				// 자식태그의 이름을 가져온다.
@@ -631,12 +746,8 @@ public class TourApi {
 			switch( child_name )
 			{
 			case "overview":	// 대분류
-				//System.out.println( "child_name : " + child_name );
-				try {
-					value = GetTag(true, _Document_type, _tag_name).item(_n).getChildNodes().item(i).getChildNodes().item(0).getNodeValue();
-				}catch (NullPointerException e){
-					e.printStackTrace();
-				}
+				//System.out.println( "child_name : " + child_name );	
+				value = GetTag(true, _Document_type, _tag_name).item(_n).getChildNodes().item(i).getChildNodes().item(0).getNodeValue();
 				//value = GetTag(_tag_name).item(_n).getChildNodes().item(i).getNodeValue();
 				//tour_data.setArea_code(value); // 숫자로 변환해주어야 한다. (코드에 영어가 속해 있음 : 어디인지 파악해야 함)
 				value_count++;																				// 반드시 값을 받아야만 하는경우 +1
@@ -644,10 +755,11 @@ public class TourApi {
 				break;
 			}
 		}
+		
 		if( value_count == 1)										
 			// 11가지 데이터를 모두 받아온 경우만, ( 현재  +1 이 11개 체크)
 		{
-			System.out.println( "GetValueOfDetail() value : " + value );
+			//System.out.println( "GetValueOfDetail() value : " + value );
 			return value;
 		}
 		else
@@ -1014,7 +1126,8 @@ public class TourApi {
 		
 		TourData tour_data = new TourData();
 		
-		tour_data.setContentId( 0 );									// 디폴드 아이디
+		tour_data.setContentId( -1 );									// 디폴드 아이디
+		tour_data.setDist(-1);
 		tour_data.setContent( "try to input your destination" );		// 
 		tour_data.setBigImage( "url" );	
 		tour_data.setTitle( "No results found" );
@@ -1096,7 +1209,7 @@ public class TourApi {
 				
 			case "masterid":
 				value = GetTag(_Document_type, _tag_name).item(_n).getChildNodes().item(i).getChildNodes().item(0).getNodeValue();
-				//System.out.println(" " + _n + "번째item,     item_length + " + item_length + "     i : " + i + "     dist : " + value );
+				System.out.println(" " + _n + "번째item,     item_length + " + item_length + "     i : " + i + "     masterid : " + value );
 				masterid = Integer.parseInt(value);
 				tour_data.setDist( masterid );
 				
@@ -1223,12 +1336,14 @@ public class TourApi {
 				
 				TourData td;
 				Iterator<TourData> it = arraylist_tour.iterator();									// iterator를 새로운 변수로 받기.
+				System.out.println("TourData.size : " + arraylist_tour.size());
 				while( it.hasNext() )
 				{
 					td = it.next();
 					
 					if( td.getContentId() == masterid )
 					{
+						System.out.println( "TourData.Id : " + td.getContentId() + " masterid : " + masterid );
 						td.setAddress( value_language[ADDRESS] );
 						td.setTel( value_language[TEL] );
 						td.setTitle( value_language[TITLE] );
@@ -1239,13 +1354,16 @@ public class TourApi {
 							td.setContent(content_language);
 						
 						language_set = true;
+						System.out.println("한국어 정보에 언어별 정보로 덧 쓰기 : " + content_language);
 					}
 				}
 				
 				if( !language_set )
 				{
 					if( content_language != null)
-						tour_data.setContent(content_language);					
+						tour_data.setContent(content_language);	
+					
+					System.out.println("언어별 정보를 추가 하기 : " + content_language);
 				}
 				// String _mapX, String _mapY, int _radius, int _contentTypeId, int _numOfRows, int _page_n
 					//locationBasedList( s_mapX, s_mapY );
@@ -1279,26 +1397,30 @@ public class TourApi {
 //		}
 		
 
-		if( value_count >= api_check && !language_set )																				// 11가지 데이터를 모두 받아온 경우만, ( 현재  +1 이 11개 체크) 
+		if( value_count >= api_check && !language_set )																			// 11가지 데이터를 모두 받아온 경우만, ( 현재  +1 이 11개 체크) 
+		{
+			System.out.println(" GetValueOfTour() : tour_data 리턴 " );
 			return tour_data;
+		}
 		else
+		{
+			System.out.println(" GetValueOfTour() :null 리턴 " );
 			return null;
+		}
 	}
-
+	
 	public boolean SetTourData( String _Document_type, String _tag_name )
 	{
-        if(this.arraylist_tour == null) {
-            this.arraylist_tour = new ArrayList();
-        }
-
-
-        boolean add_data = false;
-
+		if( arraylist_tour == null )
+			arraylist_tour = new ArrayList<TourData>();
+		
+		boolean add_data = false;
+		
 		int total = GetNumOfTag(_Document_type, _tag_name );
 		for(int i = 0 ; i < total ; i++)
 		{
 			TourData tour_data = GetValueOfTour(_Document_type, _tag_name, i);
-
+			 
 			if( tour_data != null)									// 원하는 값이 다 들어오면 null이 아니다.
 			{
 				arraylist_tour.add( tour_data );
@@ -1306,7 +1428,8 @@ public class TourApi {
 				add_data = true;
 			}
 		}
-
+		
+		System.out.println( "SetTourData().return : " + add_data);
 		return add_data;
 	}
 

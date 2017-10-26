@@ -1,6 +1,8 @@
 package com.example.web.tourseoul;
 
-public class TourData implements Comparable{
+import java.io.Serializable;
+
+public class TourData implements Comparable, Serializable{
 
 	double map_x;						// x
 	double map_y;						// y

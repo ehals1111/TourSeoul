@@ -23,7 +23,9 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:name="android.support.multidex.MultiDexApplication"
+        >
         <uses-library android:name="com.google.android.maps"/>
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
@@ -36,6 +38,8 @@
             android:value="b61613b80b58735686c90d7000e1e13c">
 
         </meta-data>
+        <meta-data android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_id"/>
         <activity android:name=".StartPage">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -49,7 +53,9 @@
         <activity android:name=".MainActivity"></activity>
         <activity android:name=".listpage"></activity>
         <activity android:name=".selectlist"></activity>
-        <service android:name=".DataService"></service>
+        <activity android:name=".AchievementList"/>
+        <service android:name=".AppCounterService"></service>
+        <receiver android:name=".ServiceMonitor$MonitorBR"/>
     </application>
 
 <!--

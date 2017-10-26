@@ -1,25 +1,18 @@
 package com.example.web.tourseoul;
 
-import android.app.Activity;
 import android.app.Dialog;
-import android.app.ProgressDialog;
-import android.content.ClipData;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.annotation.Size;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.view.ContextThemeWrapper;
 import android.support.v7.widget.PopupMenu;
-import android.support.v7.widget.ShareActionProvider;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -30,7 +23,6 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import static com.example.web.tourseoul.MainActivity.tour_list;
@@ -88,6 +80,8 @@ public class listpage extends AppCompatActivity{
 
     static String langBtn; //언어 구분 변수
     static int radiusAPI; //반경 정하기
+    private ServiceMonitor serviceMonitor = ServiceMonitor.getInstance();
+    DBHelper dbHelper;
 
 
     BackPressCloseHandler backPressCloseHandler; //뒤로가기 두 번 클릭 시 종료
@@ -97,6 +91,13 @@ public class listpage extends AppCompatActivity{
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.listpage);
+
+        dbHelper = new DBHelper(getApplicationContext(), "ToUrSeoul",null, 1);
+
+
+        if (serviceMonitor.isMonitoring() == false) {
+            serviceMonitor.startMonitoring(getApplicationContext());
+        }
 
         //Toolbar toolbar = (Toolbar)findViewById(R.id._toolbar); // 툴바 생성
         //setSupportActionBar(toolbar); // 액션바를 툴바로 대체
@@ -172,6 +173,7 @@ public class listpage extends AppCompatActivity{
                     "宿泊",
                     "ショッピング",
                     "グルメ"};
+/*
 
         radius = (SeekBar)findViewById(R.id.radius);
         radiusTxt = (TextView)findViewById(R.id.radiusTxt);
@@ -196,6 +198,7 @@ public class listpage extends AppCompatActivity{
 
             }
         });
+*/
 
         popupBtn = (Button)findViewById(R.id.popupBtn);
 
@@ -372,15 +375,20 @@ public class listpage extends AppCompatActivity{
                     customProgressDialog.show();
                     api = new TourApi();
                     api.SetLanguage(langBtn);
+                    selectedChk = new boolean[]{touristchk, culturechk, festivalchk, transporchk, reportschk, motelchk, shoppingchk, diningchk};
+                    final int[] selectedNumResult = new int[8];
+
+                    for(int i = 0; i < 8 ; i++) {
+                        if (selectedChk[i]) {
+                            selectedNumResult[i] = selectedNum[i];
+                        } else {
+                            selectedNumResult[i] = 1;
+                        }
+                    }
                     final Thread thread = new Thread() {
                         @Override
                         public void run() {
-                            selectedChk = new boolean[]{touristchk, culturechk, festivalchk, transporchk, reportschk, motelchk, shoppingchk, diningchk};
-                            for (int i = 0; i < 8; i++) {
-                                if (selectedChk[i]) {
-                                    api.XmlToData(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), radiusAPI, selectedNum[i], 2, APIPage); //접속 실행 위도 : y, 경도 : x
-                                }
-                            }
+                            api.SetTourOfValues(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), radiusAPI, selectedNumResult, 2, APIPage); //접속 실행 위도 : y, 경도 : x
                             Log.d("locationBase", Double.toString(gps.getLongitude()) + " " + Double.toString(gps.getLatitude()));
                             //api.locationBasedList();
                             adapter.addItem(api.GetTour());
@@ -413,29 +421,41 @@ public class listpage extends AppCompatActivity{
                 gps = new GPSInfo(listpage.this);
                 final String searchTxt = searchText.getText().toString();
                 selectedChk = new boolean[]{touristchk, culturechk, festivalchk, transporchk, reportschk, motelchk, shoppingchk, diningchk};
+
+                final int[] selectedNumResult = new int[8];
+
+                for(int i = 0; i < 8 ; i++) {
+                    if (selectedChk[i]) {
+                        selectedNumResult[i] = selectedNum[i];
+                    } else {
+                        selectedNumResult[i] = 1;
+                        }
+                }
                     api = new TourApi();
                     api.SetLanguage(langBtn);
                     Log.d("TourAPI", "초기화 확인했음" + " " + Double.toString(gps.getLongitude())+ " " + Double.toString(gps.getLatitude()));
                 final Thread thread = new Thread() {
                     @Override
                     public void run() {
+                    api.SetTourOfValuesSearch(searchTxt,selectedNumResult, 2, 1); //접속 실행 위도 : y, 경도 : x
+                    tour_list=api.GetTour();
+                        if (tour_list.size() == 0) {
+                            TourData tour_data = new TourData();
 
-                            for (int i = 0; i < 8; i++) {
-                                if (selectedChk[i]) {
-                                    if(searchTxt.equals(""))
-                                        api.XmlToData(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), radiusAPI, selectedNum[i], 2, 1); //접속 실행 위도 : y, 경도 : x
-                                    else
-                                    api.searchKeyword(searchTxt, selectedNum[i], 3, 1);
+                            tour_data.setContentId( -1 );									// 디폴드 아이디
+                            tour_data.setDist(-1);
+                            tour_data.setContent( "try to input your destination" );		//
+                            tour_data.setBigImage( "http://gghjj.dothome.co.kr/test/noimg.png" );
+                            tour_data.setTitle( "No results found" );
+                            tour_data.setTel( "" );
+                            tour_list.add(tour_data);
 
-                                    Log.d("selectedChk", selectedNum[i] + "");
-                                }
-                            }//for
-                            tour_list=api.GetTour();
-                            intent = new Intent(getApplicationContext(), listpage.class);      // 정보가 이동될 액티비티를 지정한다.
-                            intent.putExtra("langBtn", langBtn);                                        // DBnum이라는 변수에 DBnum == 1 넣어 intent에 데이터를 추가하여 넘기게 된다.
-                            intent.putExtra("radiusAPI", radiusAPI);
-                            startActivity(intent);                                                    // 액티비티의 전환.(위에서 적어준 데이터들도 함깨 이동 된다.
-                            finish();
+                        }
+                    intent = new Intent(getApplicationContext(), listpage.class);      // 정보가 이동될 액티비티를 지정한다.
+                    intent.putExtra("langBtn", langBtn);                                        // DBnum이라는 변수에 DBnum == 1 넣어 intent에 데이터를 추가하여 넘기게 된다.
+                    intent.putExtra("radiusAPI", radiusAPI);
+                    startActivity(intent);                                                    // 액티비티의 전환.(위에서 적어준 데이터들도 함깨 이동 된다.
+                    finish();
 
                     }//run
                 };//Thread
@@ -455,6 +475,7 @@ public class listpage extends AppCompatActivity{
                 intent.putExtra("getMapY", getMapY);
                 intent.putExtra("getMapX", getMapX);
                 intent.putExtra("radiusAPI", radiusAPI);
+                intent.putExtra("tour_list", tour_list);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 mContext.startActivity(intent);                                                    // 액티비티의 전환
 

@@ -318,7 +318,7 @@ public class selectlist extends AppCompatActivity{   //뷰를 보유하고 있�
             }
             if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
                 // Found best last known location: %s", l);
-                bestLocation = l;
+                bestLocation = l; 
             }
         }
         return bestLocation;

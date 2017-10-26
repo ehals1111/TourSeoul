@@ -18,6 +18,8 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -33,6 +35,7 @@ public class viewPagerAdapter extends PagerAdapter implements TextToSpeech.OnIni
 
     TextView name;
     TextView contents;
+    TextView distance;
     String contentsRP;
     WebView image;
     Button soundBtn;
@@ -79,6 +82,7 @@ public class viewPagerAdapter extends PagerAdapter implements TextToSpeech.OnIni
         //위에서 inflated 되어 만들어진 view로부터 findViewById()를 해야 하는 것에 주의.
         image= (WebView)view.findViewById(R.id.imageView);
         name= (TextView)view.findViewById(R.id.name);
+        distance = (TextView)view.findViewById(R.id.distance);
         contents = (TextView)view.findViewById(R.id.contents);
         soundBtn = (Button)view.findViewById(R.id.soundBtn);
 
@@ -114,12 +118,14 @@ public class viewPagerAdapter extends PagerAdapter implements TextToSpeech.OnIni
             contentsRP = contentsRP.replaceAll("<br/>", "\n");
             contentsRP = contentsRP.replaceAll("&lsquo;", "'");
             contentsRP = contentsRP.replaceAll("&rsquo;", "'");
+            contentsRP = contentsRP.replaceAll("<BR>", "\n");
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
         //api.locationBasedList("126.981611", "37.568477", 500, 15, 10, 1); //(경도, 위도, 거리, 분류, 가져올 개수, 페이지 넘버)
             name.setText(tour_list.get(position).getTitle());
             contents.setText(contentsRP);
+            distance.setText(tour_list.get(position).getDist() + "m");
             speech = new TextToSpeech(context, this);
             soundBtn.setOnClickListener(new View.OnClickListener(){
                 @Override

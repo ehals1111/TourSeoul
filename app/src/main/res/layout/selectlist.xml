@@ -1,24 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
     <android.support.v7.widget.Toolbar
         android:layout_width="match_parent"
-        android:background="@color/colorAccent"
+        android:background="#aa000000"
         android:layout_height="wrap_content" >
         <Button
             android:id="@+id/carBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="CAR"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:onClick="onClickedBtn"
+            android:background="@drawable/car"
+            android:layout_marginRight="5dp"
             />
+
         <Button
             android:id="@+id/walkBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="WALK"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:onClick="onClickedBtn"
+            android:background="@drawable/human"
+            />
+
+        <Button
+            android:id="@+id/soundBtn"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/soundon1"
+            android:layout_marginRight="10dp"
+            android:layout_gravity="right"
+            />
+
+        <Button
+            android:id="@+id/reload"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/mapoff"
+            android:layout_gravity="right"
             />
     </android.support.v7.widget.Toolbar>
 
@@ -31,17 +52,23 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             class="com.google.android.gms.maps.SupportMapFragment"/>
-        <ListView
-            android:layout_width="match_parent"
-            android:layout_height="100dp">
-        </ListView>
 
     </LinearLayout>
-    <ListView
-        android:background="#FFFFF000"
-        android:id="@+id/testBtn"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textStyle="bold"
-        android:textColor="#F0FF00FF"/>
+        android:orientation="horizontal">
+    <Button
+        android:id="@+id/myLocation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="yes, My Road"
+        />
+    <Button
+        android:id="@+id/achievment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="achivement!"
+        />
+    </LinearLayout>
 </LinearLayout>

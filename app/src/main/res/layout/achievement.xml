@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <ListView
+        android:id="@+id/achievement"
+        android:scrollbarAlwaysDrawVerticalTrack="true"
+        android:scrollbarSize="25dp"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="3.5">
+    </ListView>
+    <TextView
+        android:id="@+id/alerttext"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:text="업적(achievement) 기능은 google play service와 연동일 필요한 부분으로 현재 google play에 릴리즈 할 수 없는 공모전의 특성으로 인하여 제작은 되었으나 구현이 되지 않은 부분입니다. 추후에 릴리즈되면 바로 동작할 수 있도록 준비되어 있습니다. 지금 보시는 화면은 구현된 경우를 가정한 샘플입니다."
+        android:textSize="15dp"
+        android:textStyle="bold"
+        android:background="#000fff"
+        android:textColor="#FFFFFF"
+        android:layout_weight="1"
+        android:padding="15dp"/>
+
+</LinearLayout>

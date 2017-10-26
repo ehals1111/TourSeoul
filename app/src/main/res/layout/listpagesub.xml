@@ -17,6 +17,15 @@
             tools:layout_editor_absoluteY="8dp"
             tools:layout_editor_absoluteX="8dp">
 
+            <TextView
+                android:id="@+id/distance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="km"
+                android:textSize="17dp"
+                android:layout_gravity="left"
+                android:gravity="bottom"
+                />
             <WebView
                 android:id="@+id/imageView"
                 android:layout_width="match_parent"
@@ -65,6 +74,7 @@
             tools:layout_editor_absoluteY="8dp"
             tools:layout_editor_absoluteX="8dp"
             android:layout_weight="7"
+            android:gravity="center"
             >
 
 
@@ -83,6 +93,7 @@
                     android:textSize="17dp"
                     />
             </ScrollView>
+
 
         </LinearLayout>
     </LinearLayout>

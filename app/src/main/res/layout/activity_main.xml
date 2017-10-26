@@ -70,15 +70,13 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:weightSum="3">
-                <Button
-                    android:id="@+id/team"
+                <com.facebook.login.widget.LoginButton
+                    android:layout_below="@+id/label"
+                    android:id="@+id/login_button"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
+                    android:layout_gravity="center_horizontal"
                     android:layout_weight="2"
-                    android:textSize="20dp"
-                    android:text="Team chonriahn"
-                    android:textStyle="bold"
-                    android:background="#ffeec4"
                     />
 
 

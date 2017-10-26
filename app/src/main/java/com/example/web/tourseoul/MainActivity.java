@@ -1,31 +1,31 @@
 package com.example.web.tourseoul;
 
-import android.Manifest;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.drawable.ColorDrawable;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
-import android.provider.Settings;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.model.LatLng;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.Profile;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity {
     //mainActivity에서는 버튼을 통하여 intent에 int형태의 값을 다른 activity로 전달하는 것을 목적으로 하며 이 int값을 통하여 언어를 선별하고는 기준을 잡고자 함
@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
     static ArrayList<TourData> tour_list = new ArrayList<TourData>(); //API를 통해 받아온 리스트를 저장
     GPSInfo gps;
 
-
+    private CallbackManager callbackManager;
 
 
 //  MainActivity의 코드입니다. In
@@ -71,6 +71,45 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //페이스북
+        FacebookSdk.sdkInitialize(this.getApplicationContext());
+        callbackManager = CallbackManager.Factory.create();
+
+        LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
+        loginButton.setReadPermissions(Arrays.asList("public_profile", "email"));
+        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(final LoginResult loginResult) {
+                GraphRequest graphRequest = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
+                    @Override
+                    public void onCompleted(JSONObject object, GraphResponse response) {
+                        Log.v("result",object.toString());
+                        Log.d("getAccessToken()", String.valueOf(loginResult.getAccessToken()));
+                        Log.d("getId()", String.valueOf(Profile.getCurrentProfile().getId()));
+                        Log.d("getName()", String.valueOf(Profile.getCurrentProfile().getName())); // 이름
+                        Log.d("getProfilePictureUri", String.valueOf(Profile.getCurrentProfile().getProfilePictureUri(200, 200)));//사진
+                    }
+                });
+
+                Bundle parameters = new Bundle();
+                parameters.putString("fields", "id,name,email,gender,birthday");
+                graphRequest.setParameters(parameters);
+                graphRequest.executeAsync();
+            }
+
+            @Override
+            public void onCancel() {
+                Log.d("cans","캔슬");
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+                Log.e("LoginErr",error.toString());
+            }
+        });
+
+        //페이스북 종료
 
         chkGps();
 
@@ -102,6 +141,11 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        callbackManager.onActivityResult(requestCode, resultCode, data);
+    }
+
 
     public void checkLanguage(View view) {
         //progressDialog = ProgressDialog.show(MainActivity.this,
@@ -119,9 +163,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
 
-                for (int i = 0; i < 8; i++) {
-                    api.XmlToData(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, selectedNum[i], 2, 1); //접속 실행 위도 : y, 경도 : x
-                }
+                api.SetTourOfValues(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), 5000, selectedNum, 2, 1); //접속 실행 위도 : y, 경도 : x
 
                 //api.locationBasedList("127.05686", "37.648208", 5000,12, 10, 1); //접속 실행 위도 : y, 경도 : x
                 Log.d("locationBase", Double.toString(gps.getLongitude()) + " " + Double.toString(gps.getLatitude()));

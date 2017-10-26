@@ -56,22 +56,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
-            <SeekBar
-                android:id="@+id/radius"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:max="25"
-                android:progress="2"
-                android:layout_weight="1"
-                android:visibility="invisible"
-                />
-            <TextView
-                android:id="@+id/radiusTxt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="2km"
-                android:textSize="20dp"
-                />
         </LinearLayout>
         <FrameLayout
             android:layout_width="match_parent"
