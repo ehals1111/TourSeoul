@@ -42,9 +42,10 @@ public class viewPagerAdapter extends PagerAdapter implements TextToSpeech.OnIni
 
     Intent intent;
 
+    public static TextToSpeech speech;
     public static Boolean soundOnOff = false;
     ArrayList<TourData> tour_list;
-    public static TextToSpeech speech;
+    ArrayList<String> contentsList;
 
     public viewPagerAdapter(LayoutInflater inflater, ArrayList<TourData> tour_list, Context context) {
 
@@ -52,6 +53,8 @@ public class viewPagerAdapter extends PagerAdapter implements TextToSpeech.OnIni
         this.inflater=inflater;
         this.tour_list = tour_list;
         this.context = context;
+
+        contentsList = new ArrayList<String>();
 
     }
     //PagerAdapter가 가지고 잇는 View의 개수를 리턴
@@ -127,6 +130,7 @@ public class viewPagerAdapter extends PagerAdapter implements TextToSpeech.OnIni
             contents.setText(contentsRP);
             distance.setText(tour_list.get(position).getDist() + "m");
             speech = new TextToSpeech(context, this);
+            contentsList.add(contentsRP);
             soundBtn.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
@@ -141,7 +145,8 @@ public class viewPagerAdapter extends PagerAdapter implements TextToSpeech.OnIni
                         soundOnOff = true;
                         Log.d("버튼 로그", "버튼 :" + soundOnOff+ "\nposition : " );
                         v.setBackgroundResource(R.drawable.soundon);
-                        speakOutNow(contentsRP);
+                        Log.d("제발좀", position + " " + contentsList.get(position));
+                        speakOutNow(contentsList.get(position));
                     }
 
                 }
@@ -257,21 +262,20 @@ public class viewPagerAdapter extends PagerAdapter implements TextToSpeech.OnIni
         } else {
         }
 
-
-
-
-    }
-    public void addItem(ArrayList<TourData> data){
-        tour_list.addAll(data);
-
-        notifyDataSetChanged();
     }
     private void speakOutNow(String text) {
         String Speaktext = text;
         //tts.setPitch((float) 0.1); //음량
         //tts.setSpeechRate((float) 0.5); //재생속도
         speech.speak(text, TextToSpeech.QUEUE_FLUSH, null);
+        Log.d("speakOutNow", text + "");
     }
 
+
+    public void addItem(ArrayList<TourData> data){
+        tour_list.addAll(data);
+
+        notifyDataSetChanged();
+    }
 
 }

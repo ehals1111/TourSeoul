@@ -39,6 +39,9 @@ public class MainActivity extends AppCompatActivity {
     Button ducBtn;
     Button nihonBtn;
     Button rusBtn;
+
+    Button flogin; //facbook 버튼;
+
     ProgressDialog progressDialog; //로딩 중 화면 띄울 다이얼로그
     int[] selectedNum = null; //팝업메뉴 컨텐트아이디값 변경
     TourApi api; //API에 접근
@@ -73,10 +76,15 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         //페이스북
+
+
+
+        flogin=(Button)findViewById(R.id.flogin);
+
         FacebookSdk.sdkInitialize(this.getApplicationContext());
         callbackManager = CallbackManager.Factory.create();
 
-        LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
+        final LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
         loginButton.setReadPermissions(Arrays.asList("public_profile", "email"));
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
@@ -98,6 +106,8 @@ public class MainActivity extends AppCompatActivity {
                 graphRequest.executeAsync();
             }
 
+
+
             @Override
             public void onCancel() {
                 Log.d("cans","캔슬");
@@ -109,6 +119,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        flogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loginButton.callOnClick();
+            }
+        });
         //페이스북 종료
 
         chkGps();
@@ -150,11 +166,12 @@ public class MainActivity extends AppCompatActivity {
     public void checkLanguage(View view) {
         //progressDialog = ProgressDialog.show(MainActivity.this,
         //    "Please wait....", "Data Loading...");  //프로그래스 보여주기
-        gps = new GPSInfo(this);
+        final String langBtn = (String) view.getTag();
+        gps = new GPSInfo(this,langBtn);
         customProgressDialog = new CustomProgressDialog(MainActivity.this);
         customProgressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        customProgressDialog.setCanceledOnTouchOutside(false);
         customProgressDialog.show();
-        final String langBtn = (String) view.getTag();
             selectedNum = new int[]{12, 14, 15, 25, 28, 32, 38, 39};
         Log.d("langBtn", langBtn + "");
         api = new TourApi();
@@ -188,18 +205,18 @@ public class MainActivity extends AppCompatActivity {
 
         if (!(gps.matches(".*gps.*") && gps.matches(".*network.*"))) {
             AlertDialog.Builder gsDialog = new AlertDialog.Builder(this);
-            gsDialog.setTitle("위치 서비스 설정");
-            gsDialog.setMessage("무선 네트워크 사용, GPS 위성 사용을 모두 체크하셔야 정확한 위치 서비스가 가능합니다.\n위치 서비스 기능을 설정하시겠습니까?");
-            gsDialog.setPositiveButton("네", new DialogInterface.OnClickListener() {
+            gsDialog.setTitle("GPS service config");
+            gsDialog.setMessage("To use wireless networks, Check the GPS function to ensure correct location service.\\nDo you really want to set the Location Services feature?");
+            gsDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     // GPS설정 화면으로 이동
                     Intent intent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                     intent.addCategory(Intent.CATEGORY_DEFAULT);
                     startActivity(intent);
                 }
-            }).setNegativeButton("아니요", new DialogInterface.OnClickListener() {
+            }).setNegativeButton("NO", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
-                    Toast.makeText(getApplicationContext(), "Gps를 사용을 안 하시면 이용에 제한이 있습니다.", Toast.LENGTH_LONG).show();
+                    finish();
                     return;
                 }
             }).create().show();

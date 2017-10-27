@@ -10,6 +10,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
@@ -37,7 +38,10 @@ import com.skp.Tmap.TMapView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
+import static com.example.web.tourseoul.MainActivity.tour_list;
+import static com.example.web.tourseoul.listpage.langBtn;
 import static com.example.web.tourseoul.listpage.radiusAPI;
 
 /**
@@ -46,7 +50,10 @@ import static com.example.web.tourseoul.listpage.radiusAPI;
 
 // 지형 및 좌표?
 
-public class selectlist extends AppCompatActivity{   //뷰를 보유하고 있기 때문에 뷰 표현에 필요한 AppCompatActivity를 상속받음
+public class selectlist extends AppCompatActivity implements TextToSpeech.OnInitListener{//뷰를 보유하고 있기 때문에 뷰 표현에 필요한 AppCompatActivity를 상속받음
+
+
+
     private static final String TAG="selectlist";   //로그를 찍기 위한태그 의미없음
     Intent intent;
     Double getMapY;
@@ -60,6 +67,13 @@ public class selectlist extends AppCompatActivity{   //뷰를 보유하고 있�
     Button myLocationBtn;
     Button reload;
     Button achiv;
+    Button soundBtn;
+    boolean soundAuto = false;
+    String langBtn;
+    TourApi api;
+    GPSInfo gps;
+    int APIposition;
+
     boolean mapIconChk; //맵에 있는 아이콘 보여주기 여부
 
     TMapView tMapView;
@@ -74,25 +88,38 @@ public class selectlist extends AppCompatActivity{   //뷰를 보유하고 있�
     TMapPoint tmapPoint;
     CircleOptions circleOptions;
 
+    public static TextToSpeech speech;
+    public static Boolean soundOnOff = false;
+
     SupportMapFragment mapFragment; //프래그먼트는 특수현태의 뷰로 안드로이드에서 지원하는 외부 어플(구글맵)의 값을 넣기 위한 뷰타입임 import com.google.android.gms.maps.SupportMapFragment;
     GoogleMap map;   //외부 프로그램인 구글맵을 메모리 할당 import com.google.android.gms.maps.GoogleMap 메니페스트에 퍼미션 필요
 
 
     ArrayList<TourData> tour_list = new ArrayList<TourData>(); //API를 통해 받아온 리스트를 저장
 
+    int[] selectedNum;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {   //뷰를 가지는 모든 자바파일은 해당 크리에이트를 보유해야 함
         super.onCreate(savedInstanceState);   //무슨 기능을 가지는지 모르므로 상속받은 전부를 불러옴
         setContentView(R.layout.selectlist);   //뷰의 형태를 가지는  xml을 로드해옴
 
+        selectedNum = new int[]{12, 14, 15, 25, 28, 32, 38, 39};
         mapIconChk = true;
         intent = getIntent();
         getMapY = intent.getDoubleExtra("getMapY", -1);
         getMapX = intent.getDoubleExtra("getMapX", -1);
         radiusAPI = intent.getIntExtra("radiusAPI", -1);
+        langBtn = intent.getStringExtra("langBtn");
         tour_list = (ArrayList<TourData>)intent.getSerializableExtra("tour_list");
-        Log.d("로그띠", tour_list.size() +"");
+        APIposition = intent.getIntExtra("APIposition", -1);
+        Log.d("로그띠", " " + APIposition);
+        Log.d("로그띠", tour_list.size() +" ") ;
+        gps = new GPSInfo(getApplicationContext(), langBtn);
+        gps.setContents(tour_list.get(APIposition).getContent());
+        gps.setLatLng(new LatLng(getMapY, getMapX));
+
+
 
         Log.d(TAG + "1", getMapX + " " + getMapY +" " + radiusAPI);
         context = getApplicationContext();
@@ -105,6 +132,8 @@ public class selectlist extends AppCompatActivity{   //뷰를 보유하고 있�
         walkBtn.setTag("walk");
 
         dbHelper = new DBHelper(getApplicationContext(), "ToUrSeoul",null, 1);
+
+        speech = new TextToSpeech(context, this);
 
 
 
@@ -131,25 +160,7 @@ public class selectlist extends AppCompatActivity{   //뷰를 보유하고 있�
 
                 startMapSetting();
                 mapIconSetting();
-                map.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-                    @Override
-                    public void onInfoWindowClick(Marker marker) {
-                        gsDialog = new AlertDialog.Builder(getApplicationContext());
-                        gsDialog.setTitle("");
-                        gsDialog.setMessage("이 관광지의 정보를 확인하시겠습니까? ");
-                        gsDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-
-                            }
-                        }).setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                return;
-                            }
-                        }).create().show();
-
-                    }
-                });
-
+                map.setOnInfoWindowClickListener(infoWindowClickListener);
 
 
 
@@ -206,6 +217,25 @@ public class selectlist extends AppCompatActivity{   //뷰를 보유하고 있�
                     startMapSetting();
                     mapIconSetting();
                     mapIconChk=!mapIconChk;
+                }
+
+            }
+        });
+
+        soundBtn = (Button)findViewById(R.id.soundBtn);
+        soundBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+
+                if (soundAuto) {
+                    soundBtn.setBackgroundResource(R.drawable.soundoff1);
+                    gps.setSoundAuto(false);
+                    soundAuto = !soundAuto;
+                } else {
+                    soundBtn.setBackgroundResource(R.drawable.soundon1);
+                    gps.setSoundAuto(true);
+                    soundAuto = !soundAuto;
+
                 }
 
             }
@@ -325,24 +355,6 @@ public class selectlist extends AppCompatActivity{   //뷰를 보유하고 있�
 
     }
 
-    private class GPSListener implements LocationListener{   //GPS리스너를 구현 리스너는 위치 리스너를 상속받아서 해당 좌표값을 표현하기 용의한 형태로 구현
-        public  void  onLocationChanged(Location location){   //위치 변동시 값을 저장할 공간 마련
-            Double latitude=location.getLatitude();         //경도 변경 저장 부분
-            Double longitude=location.getLongitude();      //위도    변경 저장 부분
-        }
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {   //상태 변환 부분 반드시 구현이 필요하나 사용치는 않음(센서에서 받아온 값을 돌려주는 프로바이더의 종류[ex GPS Provider, Nanometer Provider, Geometer Provider]가 변동시 사용 필요)
-        }
-        @Override
-        public void onProviderEnabled(String provider) {   //프로바이더의 사용이 가능할 경우 사용될 프로그램 정의
-        }
-        @Override
-        public void onProviderDisabled(String provider) {   //프로바이더의 사용이 불가능할 경우 사용될 프로그램 정의(퍼미션이 있어서 그냥 놔둠 아무것도 안함)
-        }
-
-
-    }
-
     public void onClickedBtn(View view){
 
 
@@ -353,7 +365,7 @@ public class selectlist extends AppCompatActivity{   //뷰를 보유하고 있�
         point = new ArrayList<TMapPoint>();
         gsDialog = new AlertDialog.Builder(this);
         gsDialog.setTitle("");
-        gsDialog.setMessage("Would you like to view the path");
+        gsDialog.setMessage("Would you like to view the path?");
         gsDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 map.clear();
@@ -406,6 +418,111 @@ public class selectlist extends AppCompatActivity{   //뷰를 보유하고 있�
         }
 
     }
+
+    @Override
+    public void onInit(int status) {
+
+        if (status == TextToSpeech.SUCCESS) {
+            int language = 0;
+            if (langBtn == "Kor") {
+                language = speech.setLanguage(Locale.KOREA);
+                Log.d("languageSetting", "현재 언어 : " + langBtn);
+            } else if (langBtn.equals("Eng")) {
+                language = speech.setLanguage(Locale.ENGLISH);
+                Log.d("languageSetting", "현재 언어 : " + langBtn);
+            } else if (langBtn.equals("Chs")) {
+                language = speech.setLanguage(Locale.SIMPLIFIED_CHINESE);
+                Log.d("languageSetting", "현재 언어 : " + langBtn);
+            } else if (langBtn.equals("Cht")) {
+                language = speech.setLanguage(Locale.TRADITIONAL_CHINESE);
+                Log.d("languageSetting", "현재 언어 : " + langBtn);
+            } else if (langBtn.equals("Fre")) {
+                language = speech.setLanguage(Locale.FRENCH);
+                Log.d("languageSetting", "현재 언어 : " + langBtn);
+            } else if (langBtn.equals("Spn")) {
+                language = speech.setLanguage(new Locale("spa", "ESP"));
+                Log.d("languageSetting", "현재 언어 : " + langBtn);
+            } else if (langBtn.equals("Ger")) {
+                language = speech.setLanguage(Locale.GERMANY);
+                Log.d("languageSetting", "현재 언어 : " + langBtn);
+            } else if (langBtn.equals("Jap")) {
+                language = speech.setLanguage(Locale.JAPAN);
+                Log.d("languageSetting", "현재 언어 : " + langBtn);
+            } else if (langBtn.equals("Rus")) {
+                language = speech.setLanguage(new Locale("ru"));
+                Log.d("languageSetting", "현재 언어 : " + langBtn);
+            }
+
+            //int language = speech.setLanguage(new Locale("spa", "ESP"));
+
+            if (language == TextToSpeech.LANG_MISSING_DATA || language == TextToSpeech.LANG_NOT_SUPPORTED) {
+            } else {
+            }
+        } else {
+
+        }
+    }
+    private void speakOutNow(String text) {
+        String Speaktext = text;
+        //tts.setPitch((float) 0.1); //음량
+        //tts.setSpeechRate((float) 0.5); //재생속도
+        speech.speak(text, TextToSpeech.QUEUE_FLUSH, null);
+        Log.d("speakOutNow", text + "");
+    }
+
+    GoogleMap.OnInfoWindowClickListener infoWindowClickListener = new GoogleMap.OnInfoWindowClickListener() {
+        @Override
+        public void onInfoWindowClick(final Marker marker) {
+            String markerId = marker.getId();
+            final String markers = marker.getTitle();
+            Log.d("markerClick", marker.getTitle() + "");
+
+            gsDialog = new AlertDialog.Builder(selectlist.this);
+            gsDialog.setTitle("");
+            gsDialog.setMessage("이곳의 자세한 정보를 보시겠습니까?");
+            gsDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    api = new TourApi();
+                    api.SetLanguage(langBtn);
+                    final Thread thread = new Thread() {
+                        @Override
+                        public void run() {
+                            api.SetTourOfValuesSearch(markers ,selectedNum, 2, 1); //접속 실행 위도 : y, 경도 : x
+                            tour_list=api.GetTour();
+                            if (tour_list.size() == 0) {
+                                TourData tour_data = new TourData();
+
+                                tour_data.setContentId( -1 );									// 디폴드 아이디
+                                tour_data.setDist(-1);
+                                tour_data.setContent( "try to input your destination" );		//
+                                tour_data.setBigImage( "http://gghjj.dothome.co.kr/test/noimg.png" );
+                                tour_data.setTitle( "No results found" );
+                                tour_data.setTel( "" );
+                                tour_list.add(tour_data);
+
+                            }
+                            intent = new Intent(getApplicationContext(), listpage.class);      // 정보가 이동될 액티비티를 지정한다.
+                            intent.putExtra("langBtn", langBtn);                                        // DBnum이라는 변수에 DBnum == 1 넣어 intent에 데이터를 추가하여 넘기게 된다.
+                            intent.putExtra("radiusAPI", radiusAPI);                       // DBnum이라는 변수에 DBnum == 1 넣어 intent에 데이터를 추가하여 넘기게 된다.
+                            intent.putExtra("tour_list", tour_list);
+                            startActivity(intent);                                                    // 액티비티의 전환.(위에서 적어준 데이터들도 함깨 이동 된다.
+                            finish();
+
+                        }//run
+                    };//Thread
+                    thread.start();
+
+                }
+            }).setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+
+                    return;
+                }
+            }).create().show();
+
+        }
+    };
+
 
 
 }

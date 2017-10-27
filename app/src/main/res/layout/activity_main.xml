@@ -70,14 +70,23 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:weightSum="3">
-                <com.facebook.login.widget.LoginButton
-                    android:layout_below="@+id/label"
-                    android:id="@+id/login_button"
+                <Button
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_gravity="center_horizontal"
                     android:layout_weight="2"
+                    android:id="@+id/flogin"
+                    android:text="FACEBOOK"
+                    android:textColor="#fff"
+                    android:textSize="20dp"
+                    android:textStyle="bold"
+                    android:background="#0062FF"
                     />
+                <com.facebook.login.widget.LoginButton
+                    android:id="@+id/login_button"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_below="@+id/label"
+                    android:visibility="invisible" />
 
 
                 <Button

@@ -17,6 +17,14 @@
             tools:layout_editor_absoluteY="8dp"
             tools:layout_editor_absoluteX="8dp">
 
+            <WebView
+                android:id="@+id/imageView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:adjustViewBounds="true"
+                app:srcCompat="@drawable/c00101"
+                android:scrollbars="none"
+                />
             <TextView
                 android:id="@+id/distance"
                 android:layout_width="wrap_content"
@@ -25,14 +33,6 @@
                 android:textSize="17dp"
                 android:layout_gravity="left"
                 android:gravity="bottom"
-                />
-            <WebView
-                android:id="@+id/imageView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:adjustViewBounds="true"
-                app:srcCompat="@drawable/c00101"
-                android:scrollbars="none"
                 />
             <LinearLayout
                 android:layout_width="match_parent"
@@ -62,7 +62,8 @@
                     android:layout_margin="7dp"
                     android:layout_marginRight="5dp"
                     android:background="@drawable/soundon"
-                    android:layout_gravity="center"/>
+                    android:layout_gravity="center"
+                    />
             </LinearLayout>
 
 

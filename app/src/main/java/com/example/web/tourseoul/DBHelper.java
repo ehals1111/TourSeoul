@@ -45,6 +45,7 @@ public class DBHelper extends SQLiteOpenHelper {
         sb.append(latitude + ", " + longitude +");");
 
         db.execSQL(sb.toString());
+        Log.d("insertData", sb.toString() + "");
 
 
 

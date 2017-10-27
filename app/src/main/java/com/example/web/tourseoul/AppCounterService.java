@@ -42,7 +42,7 @@ public class AppCounterService extends Service {
         mActivityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         serviceRunning = true;
 
-        gps = new GPSInfo(getApplicationContext());
+        //gps = new GPSInfo(getApplicationContext());
     }
 
     @Override

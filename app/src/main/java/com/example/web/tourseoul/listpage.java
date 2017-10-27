@@ -53,6 +53,9 @@ public class listpage extends AppCompatActivity{
     boolean[] selectedChk = null; //팝업메뉴 체크 여부 확인
     String[] popupItemTitle = null;
 
+    boolean searchChk = false;
+    String searchTxt;
+
     SeekBar radius;
     TextView radiusTxt;
 
@@ -84,6 +87,8 @@ public class listpage extends AppCompatActivity{
     DBHelper dbHelper;
 
 
+
+
     BackPressCloseHandler backPressCloseHandler; //뒤로가기 두 번 클릭 시 종료
     //Speak out...
 
@@ -95,25 +100,26 @@ public class listpage extends AppCompatActivity{
         dbHelper = new DBHelper(getApplicationContext(), "ToUrSeoul",null, 1);
 
 
-        if (serviceMonitor.isMonitoring() == false) {
-            serviceMonitor.startMonitoring(getApplicationContext());
-        }
-
         //Toolbar toolbar = (Toolbar)findViewById(R.id._toolbar); // 툴바 생성
         //setSupportActionBar(toolbar); // 액션바를 툴바로 대체
         backPressCloseHandler = new BackPressCloseHandler(this);
-        gps = new GPSInfo(getApplicationContext());
 
         radiusAPI = 0;
         mContext = getApplicationContext();
         intent = getIntent();
         langBtn = intent.getExtras().getString("langBtn");
+        gps = new GPSInfo(getApplicationContext(), langBtn);
         radiusAPI = intent.getIntExtra("radiusAPI", -1);
+        searchChk = intent.getBooleanExtra("searchChk", false);
+        Log.d("searchChk", searchChk + "");
+        searchTxt = intent.getExtras().getString("searchTxt");
+        if((ArrayList<TourData>)intent.getSerializableExtra("tour_list")!=null)
+        tour_list = (ArrayList<TourData>)intent.getSerializableExtra("tour_list");
         Log.d("adf", ""+radiusAPI);
+        selectedNum = new int[]{12, 14, 15, 25, 28, 32, 38, 39};
         if (radiusAPI == -1) {
             radiusAPI = 4000;
         }
-            selectedNum = new int[]{12, 14, 15, 25, 28, 32, 38, 39};
 
         if(langBtn.equals("Eng"))
             popupItemTitle = new String[]{"Tourlist Atractions", "Cultural Facilities", "Festivals/Events/Performances", "Transportation", "Leisure/Sports", "Accommodation", "Shopping", "Dining"};
@@ -368,7 +374,7 @@ public class listpage extends AppCompatActivity{
                 }
 
                 if(position==tour_list.size() -2 && lastPageChk){
-                    gps = new GPSInfo(listpage.this);
+                    gps = new GPSInfo(getApplicationContext(), langBtn);
                     customProgressDialog = new CustomProgressDialog(listpage.this);
                     customProgressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
                     customProgressDialog.setCanceledOnTouchOutside(false);
@@ -388,8 +394,13 @@ public class listpage extends AppCompatActivity{
                     final Thread thread = new Thread() {
                         @Override
                         public void run() {
+                            if(searchChk)
+                                api.SetTourOfValuesSearch(searchTxt,selectedNumResult, 2, APIPage); //접속 실행 위도 : y, 경도 : x
+                            else
                             api.SetTourOfValues(Double.toString(gps.getLongitude()), Double.toString(gps.getLatitude()), radiusAPI, selectedNumResult, 2, APIPage); //접속 실행 위도 : y, 경도 : x
+
                             Log.d("locationBase", Double.toString(gps.getLongitude()) + " " + Double.toString(gps.getLatitude()));
+                            Log.d("lapi.GetTour", api.GetTour().size() + " ");
                             //api.locationBasedList();
                             adapter.addItem(api.GetTour());
                             //adapter.notifyDataSetChanged();
@@ -418,8 +429,8 @@ public class listpage extends AppCompatActivity{
         searchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                gps = new GPSInfo(listpage.this);
-                final String searchTxt = searchText.getText().toString();
+                gps = new GPSInfo(getApplicationContext(), langBtn);
+                searchTxt = searchText.getText().toString();
                 selectedChk = new boolean[]{touristchk, culturechk, festivalchk, transporchk, reportschk, motelchk, shoppingchk, diningchk};
 
                 final int[] selectedNumResult = new int[8];
@@ -451,9 +462,12 @@ public class listpage extends AppCompatActivity{
                             tour_list.add(tour_data);
 
                         }
+                    searchChk = true;
                     intent = new Intent(getApplicationContext(), listpage.class);      // 정보가 이동될 액티비티를 지정한다.
                     intent.putExtra("langBtn", langBtn);                                        // DBnum이라는 변수에 DBnum == 1 넣어 intent에 데이터를 추가하여 넘기게 된다.
                     intent.putExtra("radiusAPI", radiusAPI);
+                    intent.putExtra("searchChk", searchChk);
+                    intent.putExtra("searchTxt", searchTxt);
                     startActivity(intent);                                                    // 액티비티의 전환.(위에서 적어준 데이터들도 함깨 이동 된다.
                     finish();
 
@@ -475,7 +489,9 @@ public class listpage extends AppCompatActivity{
                 intent.putExtra("getMapY", getMapY);
                 intent.putExtra("getMapX", getMapX);
                 intent.putExtra("radiusAPI", radiusAPI);
+                intent.putExtra("langBtn", langBtn);                                        // DBnum이라는 변수에 DBnum == 1 넣어 intent에 데이터를 추가하여 넘기게 된다.
                 intent.putExtra("tour_list", tour_list);
+                intent.putExtra("APIposition", APIposition);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 mContext.startActivity(intent);                                                    // 액티비티의 전환
 
@@ -490,9 +506,6 @@ public class listpage extends AppCompatActivity{
         getMenuInflater().inflate(R.menu.popup, menu);
         return true;
 
-    }
-    public boolean onOptionsItemSelected(Menu menu) { //툴바 안의 내용 클릭 시
-        return true;
     }
     public boolean onOptionsItemSelected(MenuItem item) {
         int id=item.getItemId();
@@ -555,4 +568,5 @@ public class listpage extends AppCompatActivity{
         //super.onBackPressed();
         backPressCloseHandler.onBackPressed();
     }
+
 }
